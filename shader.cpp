@@ -125,15 +125,17 @@ void Shader::SetUniformMat4f(const std::string& name, const glm::mat4 matrix)
 
 int Shader::GetUniformLocation(const std::string& name)
 {
-    if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) // Checks hashmap to see if 'name' has already been declared, if so, returns the integer ID
+    if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) { // Checks hashmap to see if 'name' has already been declared, if so, returns the integer ID
         return m_UniformLocationCache[name];
-
-    GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
-    if (location == -1)
-    {
-        std::cout << "Warning : Uniform '" << name << "' doesn't exist!" << std::endl;
+    }
+    else {
+        GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
+        if (location == -1)
+        {
+            std::cout << "Warning : Uniform '" << name << "' doesn't exist!" << std::endl;
+        }
+        m_UniformLocationCache[name] = location; // Otherwise the hashmap is appended with the ID at 'name'
+        return location;
     }
 
-    m_UniformLocationCache[name] = location; // Otherwise the hashmap is appended with the ID at 'name'
-    return location;
 }

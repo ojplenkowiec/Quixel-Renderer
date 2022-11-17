@@ -78,14 +78,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -99,7 +99,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -108,7 +108,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx32\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -120,14 +120,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -141,7 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -150,7 +150,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx64\lib;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

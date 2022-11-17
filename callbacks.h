@@ -37,6 +37,20 @@ static void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, 
 	}
 }
 
+static void glfwMousePositionCallback(GLFWwindow* window, double xPos, double yPos) {
+	MOUSE_X_DIFFERENCE = xPos - MOUSE_X;
+	MOUSE_Y_DIFFERENCE = yPos - MOUSE_Y;
+
+	MOUSE_X = xPos;
+	MOUSE_Y = yPos;
+
+	if (firstMouse) {
+		MOUSE_X_DIFFERENCE = 0.0;
+		MOUSE_Y_DIFFERENCE = 0.0;
+		firstMouse = false;
+	}
+}
+
 static void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	switch (action) {
 	case GLFW_PRESS:
