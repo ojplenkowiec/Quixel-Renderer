@@ -38,16 +38,16 @@ static void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, 
 }
 
 static void glfwMousePositionCallback(GLFWwindow* window, double xPos, double yPos) {
-	MOUSE_X_DIFFERENCE = xPos - MOUSE_X;
-	MOUSE_Y_DIFFERENCE = yPos - MOUSE_Y;
+	g_MOUSE_X_DIFFERENCE = xPos - g_MOUSE_X;
+	g_MOUSE_Y_DIFFERENCE = yPos - g_MOUSE_Y;
 
-	MOUSE_X = xPos;
-	MOUSE_Y = yPos;
+	g_MOUSE_X = xPos;
+	g_MOUSE_Y = yPos;
 
-	if (firstMouse) {
-		MOUSE_X_DIFFERENCE = 0.0;
-		MOUSE_Y_DIFFERENCE = 0.0;
-		firstMouse = false;
+	if (g_firstMouse) {
+		g_MOUSE_X_DIFFERENCE = 0.0;
+		g_MOUSE_Y_DIFFERENCE = 0.0;
+		g_firstMouse = false;
 	}
 }
 

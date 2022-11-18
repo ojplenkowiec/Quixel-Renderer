@@ -21,6 +21,7 @@
 #include <sstream>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
+#include "main.h"
 
 int main() {
 	glfwSetErrorCallback(glfwErrorCallback);
@@ -38,8 +39,6 @@ int main() {
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-	// glfwWindowHint(GLFW_SAMPLES, 4);
-
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -56,7 +55,7 @@ int main() {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	/* GLFW Callbacks --------------------------------------------*/
 
@@ -68,17 +67,17 @@ int main() {
 	/* Buffer Data ---------------------------------------------*/
 
 	const float cubeVertices[] = { // 24
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f
 	};
 
-	const unsigned int cubeIndexes[] = { // 36
+	unsigned int cubeIndexes[] = { // 36
 		0, 3, 2,
 		0, 2, 1,
 		6, 7, 4,
@@ -96,29 +95,18 @@ int main() {
 	/* Buffer Creation -------------------------------*/
 
 	VertexBuffer cubeVertexBuffer = VertexBuffer(cubeVertices, 24 * sizeof(float));
-
 	VertexBufferLayout cubeVertexBufferLayout = VertexBufferLayout();
 	cubeVertexBufferLayout.Push<float>(3);
-
 	IndexBuffer cubeIndexBuffer = IndexBuffer(cubeIndexes, 36);
 
 	/* VAO Creation ----------------------------------*/
 
 	VertexArray cubeVertexArray = VertexArray(cubeVertexBuffer, cubeVertexBufferLayout);
-
 	Shader basicShader = Shader("basic.shader");
 
-	Renderer renderer = Renderer();
+	/* Renderer instantiation --------------------------*/
 
-	/* Matrix uniform data -------------------------------------*/
-
-	glm::mat4 modelMatrix = glm::mat4(1.0f);
-	modelMatrix = glm::rotate(modelMatrix, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	glm::mat4 viewMatrix = glm::mat4(1.0f);
-	viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
-
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(70.0f), (float)mode->width / (float)mode->height, 0.1f, 1000.0f);
+	Renderer renderer = Renderer(1, mode->width / (float)mode->height);
 
 	/* Color uniform data ------------------------------------------------------------*/
 
@@ -126,119 +114,84 @@ int main() {
 
 	/* Camera vector data -------------------------------*/
 
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
-	glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	float pitch = 0.0f;
-	float yaw = -90.0f;
-
 	float mouseSensitivity = 0.1f;
 
-	float cameraSpeed = 2.0f;
-
-	/* Time variables ----------------------------*/
-
-	float deltaTime = 0.0f;
-	float lastFrameTime = 0.0f;
-	float currentFrameTime = 0.0f;
-
-	/* Main loop ------------------------------------------*/
-	
-	const unsigned int numberOfCubes = 2000;
-	glm::vec3 cubePositions[numberOfCubes]{};
-	for (int i = 0; i < numberOfCubes; i++) {
-		for (int j = 0; j < 3; j++) {
-			cubePositions[i][j] = rand() % 1000 / 50.0f - 25.0f;
-		}
-	}
+	float cameraSpeed = 4.0f;
+	float rotateSpeed = 90.0f;
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.05f, 0.15f, 0.25f, 1.0f);
 	while (glfwWindowShouldClose(window) != GLFW_TRUE) {
 		renderer.Clear();
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		currentFrameTime = glfwGetTime();
-		deltaTime = currentFrameTime - lastFrameTime;
-		lastFrameTime = currentFrameTime;
-
-		cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		cameraDirection.y = sin(glm::radians(pitch));
-		cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-		cameraUp.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch + 90.0f));
-		cameraUp.y = sin(glm::radians(pitch + 90.0f));
-		cameraUp.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch + 90.0f));
+		updateDeltaTime(); // updates DELTA_TIME global
 
 		basicShader.Bind();
 
-		viewMatrix = glm::lookAt(cameraPos, cameraPos + glm::normalize(cameraDirection), cameraUp);
-		for (unsigned int i = 0; i < numberOfCubes; i++) { // 200 cube positions!
-			float angle = 20.0f * i;
-			modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, cubePositions[i]);
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.05, 0.05, 30.0));
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		basicShader.SetUniformMat4f("u_model", modelMatrix);
 
-			basicShader.SetUniformMat4f("u_model", modelMatrix);
-			basicShader.SetUniformMat4f("u_view", viewMatrix);
-			basicShader.SetUniformMat4f("u_projection", projectionMatrix);
-
-			for (int i = 0; i < 3; i++) {
-				cubeColor[i] = rand() % 1000 / 1000.0f;
-			}
-			basicShader.SetUniform4f("u_color", cubeColor[0], cubeColor[1], cubeColor[2], cubeColor[3]);
-
-			renderer.Draw(cubeVertexArray, cubeIndexBuffer, basicShader);
-		}
+		renderer.Draw(cubeVertexArray, cubeIndexBuffer, basicShader);
 
 		glfwSwapBuffers(window);
 
-		/* Handle input controls --------------------------*/
+		/* Keyboard updates --------------------------*/
 
 		if (INPUT_STATE >= SHIFT_KEY) {
-			cameraSpeed = 4.0f;
+			cameraSpeed = 8.0f;
+		}
+		else if (INPUT_STATE >= CTRL_KEY) {
+			cameraSpeed = 2.0f;
 		}
 		else {
-			cameraSpeed = 2.0f;
+			cameraSpeed = 4.0f;
 		}
 
 		if (!(INPUT_STATE >= W_KEY + S_KEY)) {
 			if (INPUT_STATE >= W_KEY) {
-				cameraPos += cameraSpeed * cameraDirection * deltaTime;
+				renderer.r_camera.TranslateForwards(cameraSpeed * g_DELTA_TIME);
 			}
 			else if (INPUT_STATE >= S_KEY) {
-				cameraPos -= cameraSpeed * cameraDirection * deltaTime;
+				renderer.r_camera.TranslateForwards(-cameraSpeed * g_DELTA_TIME);
 			}
 		}
 		if (!(INPUT_STATE >= A_KEY + D_KEY)) {
 			if (INPUT_STATE >= A_KEY) {
-				cameraPos -= glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed * deltaTime;
+				renderer.r_camera.TranslateRight(-cameraSpeed * g_DELTA_TIME);
 			}
 			else if (INPUT_STATE >= D_KEY) {
-				cameraPos += glm::normalize(glm::cross(cameraDirection, cameraUp)) * cameraSpeed * deltaTime;
+				renderer.r_camera.TranslateRight(cameraSpeed * g_DELTA_TIME);
 			}
 		}
 
-		/* Mouse updates ----------------------------------------------*/
-
-		pitch -= MOUSE_Y_DIFFERENCE * mouseSensitivity;
-		yaw += MOUSE_X_DIFFERENCE * mouseSensitivity;
-
-		MOUSE_X_DIFFERENCE = 0.0;
-		MOUSE_Y_DIFFERENCE = 0.0;
-
-	    /*if (pitch > 89.0f) {
-			pitch = 89.0f;
+		if (!(INPUT_STATE >= LEFT_KEY + RIGHT_KEY)) {
+			if (INPUT_STATE >= LEFT_KEY) {
+				renderer.r_camera.Rotate(0.0f, -rotateSpeed * g_DELTA_TIME);
+			}
+			else if (INPUT_STATE >= RIGHT_KEY) {
+				renderer.r_camera.Rotate(0.0f, rotateSpeed * g_DELTA_TIME);
+			}
 		}
-		if (pitch < -89.0f) {
-			pitch = -89.0f;
-		}*/
+		if (!(INPUT_STATE >= UP_KEY + DOWN_KEY)) {
+			if (INPUT_STATE >= UP_KEY) {
+				renderer.r_camera.Rotate(rotateSpeed * g_DELTA_TIME, 0.0f);
+			}
+			else if (INPUT_STATE >= DOWN_KEY) {
+				renderer.r_camera.Rotate(-rotateSpeed * g_DELTA_TIME, 0.0f);
+			}
+		}
 
 		if (INPUT_STATE >= ESC_KEY) {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
+
+		/* Mouse updates ----------------------------------------------*/ //INPUTS CLASS FOR RESETTING GLOBAL VARIABLES ETC NEEDED//
+
+		renderer.r_camera.Rotate(-g_MOUSE_Y_DIFFERENCE * mouseSensitivity, g_MOUSE_X_DIFFERENCE * mouseSensitivity);
+		g_MOUSE_X_DIFFERENCE = 0.0;
+		g_MOUSE_Y_DIFFERENCE = 0.0;
+
+		/* Poll events --------------------------------------*/
+
 		glfwPollEvents();
 	}
 	glfwDestroyWindow(window);
