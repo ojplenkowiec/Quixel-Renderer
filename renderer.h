@@ -22,6 +22,8 @@ public:
 
     void Clear() const;
     void Draw(const VertexArray& va, const IndexBuffer& ib, Shader& shader);
+    void Draw(const VertexArray& va, Shader& shader);
+    void DrawInstancedArrays(const VertexArray& instanceVertexArray, Shader& instanceShader);
 };
 
 #endif

@@ -61,9 +61,6 @@
     <ClInclude Include="vertexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vertexbufferlayout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="debugging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,12 +76,15 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="main.h">
+    <ClInclude Include="vertexbufferlayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="instance.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -84,6 +84,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 
     GLCall(glAttachShader(program, vs));
     GLCall(glAttachShader(program, fs));
+
     GLCall(glLinkProgram(program));
     GLCall(glValidateProgram(program));
 
@@ -105,21 +106,37 @@ void Shader::Unbind() const
 
 void Shader::SetUniform4f(const std::string& name, float f0, float f1, float f2, float f3)
 {
+    GLCall(glUseProgram(m_RendererID));
     GLCall(glUniform4f(GetUniformLocation(name), f0, f1, f2, f3));
+}
+
+void Shader::SetUniform3f(const std::string& name, float f0, float f1, float f2)
+{
+    GLCall(glUseProgram(m_RendererID));
+    GLCall(glUniform3f(GetUniformLocation(name), f0, f1, f2));
+}
+
+void Shader::SetUniform3f(const std::string& name, glm::vec3 vector)
+{
+    GLCall(glUseProgram(m_RendererID));
+    glUniform3fv(GetUniformLocation(name), 1, &vector[0]);
 }
 
 void Shader::SetUniform1f(const std::string& name, float f0)
 {
+    GLCall(glUseProgram(m_RendererID));
     GLCall(glUniform1f(GetUniformLocation(name), f0));
 }
 
 void Shader::SetUniform1i(const std::string& name, int i0)
 {
+    GLCall(glUseProgram(m_RendererID));
     GLCall(glUniform1i(GetUniformLocation(name), i0));
 }
 
 void Shader::SetUniformMat4f(const std::string& name, const glm::mat4 matrix)
 {
+    GLCall(glUseProgram(m_RendererID));
     GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
 

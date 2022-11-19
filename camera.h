@@ -9,15 +9,21 @@
 class Camera {
 public:
 	Camera(float aspectRatio, float fov, float nearDistance, float farDistance);
-	~Camera();
+
+	void MoveForwards(float distance);
+	void MoveRight(float distance);
+	void MoveUp(float distance);
+	void Rotate(float dPitch, float dYaw);
 
 	void TranslateForwards(float distance);
 	void TranslateRight(float distance);
 	void TranslateUp(float distance);
-	void Rotate(float dPitch, float dYaw);
+	void Translate(glm::vec3 translationVector);
 
 	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetViewMatrix();
+
+	inline glm::vec3 GetPosition() { return c_PositionVector; }
 private:
 	glm::vec3 c_PositionVector;
 	glm::vec3 c_DirectionVector;

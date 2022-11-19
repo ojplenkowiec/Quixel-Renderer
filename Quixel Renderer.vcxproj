@@ -171,7 +171,6 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="indexbuffer.h" />
     <ClInclude Include="inputstate.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
@@ -181,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader" />
+    <None Include="instance.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GojoTexture256x256.png" />

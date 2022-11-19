@@ -1,6 +1,5 @@
 #define GLEW_STATIC
 #include <glew.h>
-
 #include <glfw3.h>
 
 #include "debugging.h"
@@ -21,7 +20,6 @@
 #include <sstream>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-#include "main.h"
 
 int main() {
 	glfwSetErrorCallback(glfwErrorCallback);
@@ -55,8 +53,6 @@ int main() {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glfwSwapInterval(1);
-
 	/* GLFW Callbacks --------------------------------------------*/
 
 	glfwSetWindowCloseCallback(window, glfwWindowCloseCallback);
@@ -66,7 +62,7 @@ int main() {
 
 	/* Buffer Data ---------------------------------------------*/
 
-	const float cubeVertices[] = { // 24
+	float cubeVertices[] = { // 24
 		-1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f,  1.0f,
 		 1.0f,  1.0f,  1.0f,
@@ -92,74 +88,149 @@ int main() {
 		1, 5, 4
 	};
 
+	float longCubeVertices[] = {
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	};
+
+	std::vector<glm::vec3> cubePositions;
+	for (int i = 0; i < 50000; i++) {
+		float x = (rand() % 1000 - 500) / 10.0f;
+		float y = (rand() % 1000 - 500) / 10.0f;
+		float z = (rand() % 1000 - 500) / 10.0f;
+		cubePositions.push_back(glm::vec3(x, y, z)); // translations
+		cubePositions.push_back(glm::vec3((x + 50) / 100.0f, (y + 50) / 100.0f, (z + 50) / 100.0f)); // colors
+	}
+
 	/* Buffer Creation -------------------------------*/
 
-	VertexBuffer cubeVertexBuffer = VertexBuffer(cubeVertices, 24 * sizeof(float));
-	VertexBufferLayout cubeVertexBufferLayout = VertexBufferLayout();
-	cubeVertexBufferLayout.Push<float>(3);
-	IndexBuffer cubeIndexBuffer = IndexBuffer(cubeIndexes, 36);
+	VertexBuffer cubeVB = VertexBuffer(cubeVertices, 24 * sizeof(float), 8);
+	VertexBufferLayout cubeVBL = VertexBufferLayout();
+	cubeVBL.Push<float>(3);
+	IndexBuffer cubeIB = IndexBuffer(cubeIndexes, 36);
+
+	VertexBuffer longCubeVB = VertexBuffer(longCubeVertices, 6 * 6 * 6 * sizeof(float), 6 * 6 * 6);
+	VertexBufferLayout longCubeVBL = VertexBufferLayout();
+	longCubeVBL.Push<float>(3);
+	longCubeVBL.Push<float>(3);
+
+	VertexBuffer cubeInstancesVB = VertexBuffer(&cubePositions[0], cubePositions.size() * sizeof(glm::vec3), cubePositions.size());
+	VertexBufferLayout cubeInstancesVBL = VertexBufferLayout();
+	cubeInstancesVBL.Push<float>(3);
+	cubeInstancesVBL.Push<float>(3);
 
 	/* VAO Creation ----------------------------------*/
 
-	VertexArray cubeVertexArray = VertexArray(cubeVertexBuffer, cubeVertexBufferLayout);
+	VertexArray cubeVAO = VertexArray(cubeVB, cubeVBL);
+	VertexArray longCubeVAO = VertexArray(longCubeVB, longCubeVBL);
+
+	VertexArray instancedLongCubeVAO = VertexArray(longCubeVB, longCubeVBL, cubeInstancesVB, cubeInstancesVBL);
+
+	/* Shader Creation --------------------------*/
+
 	Shader basicShader = Shader("basic.shader");
+
+	Shader instanceShader = Shader("instance.shader");
 
 	/* Renderer instantiation --------------------------*/
 
 	Renderer renderer = Renderer(1, mode->width / (float)mode->height);
 
-	/* Color uniform data ------------------------------------------------------------*/
-
-	glm::vec4 cubeColor = glm::vec4(1.0f, 0.75f, 0.75f, 1.0f);
-
 	/* Camera vector data -------------------------------*/
 
 	float mouseSensitivity = 0.1f;
-
 	float cameraSpeed = 4.0f;
 	float rotateSpeed = 90.0f;
 
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.05f, 0.15f, 0.25f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	while (glfwWindowShouldClose(window) != GLFW_TRUE) {
 		renderer.Clear();
 		updateDeltaTime(); // updates DELTA_TIME global
 
-		basicShader.Bind();
+		instanceShader.SetUniformMat4f("u_model", glm::mat4(1.0f));
+		//instanceShader.SetUniform3f("u_objectColor", 1.0, 1.0, 1.0);
 
-		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		basicShader.SetUniformMat4f("u_model", modelMatrix);
+		basicShader.SetUniformMat4f("u_model", glm::mat4(1.0f));
+		basicShader.SetUniform3f("u_objectColor", 0.5, 0.5, 0.5);
 
-		renderer.Draw(cubeVertexArray, cubeIndexBuffer, basicShader);
+		renderer.DrawInstancedArrays(instancedLongCubeVAO, instanceShader);
+
+		// renderer.Draw(cubeVAO, cubeIB, basicShader);
 
 		glfwSwapBuffers(window);
 
 		/* Keyboard updates --------------------------*/
 
-		if (INPUT_STATE >= SHIFT_KEY) {
-			cameraSpeed = 8.0f;
-		}
-		else if (INPUT_STATE >= CTRL_KEY) {
-			cameraSpeed = 2.0f;
+		if (INPUT_STATE >= SPACE_KEY) {
+			cameraSpeed = 40.0f;
 		}
 		else {
-			cameraSpeed = 4.0f;
+			cameraSpeed = 20.0f;
+		}
+
+		if (!(INPUT_STATE >= SHIFT_KEY + CTRL_KEY)) {
+			if (INPUT_STATE >= SHIFT_KEY) {
+				renderer.r_camera.TranslateUp(cameraSpeed * g_DELTA_TIME);
+			}
+			else if (INPUT_STATE >= CTRL_KEY) {
+				renderer.r_camera.TranslateUp(-cameraSpeed * g_DELTA_TIME);
+			}
 		}
 
 		if (!(INPUT_STATE >= W_KEY + S_KEY)) {
 			if (INPUT_STATE >= W_KEY) {
-				renderer.r_camera.TranslateForwards(cameraSpeed * g_DELTA_TIME);
+				renderer.r_camera.MoveForwards(cameraSpeed * g_DELTA_TIME);
 			}
 			else if (INPUT_STATE >= S_KEY) {
-				renderer.r_camera.TranslateForwards(-cameraSpeed * g_DELTA_TIME);
+				renderer.r_camera.MoveForwards(-cameraSpeed * g_DELTA_TIME);
 			}
 		}
 		if (!(INPUT_STATE >= A_KEY + D_KEY)) {
 			if (INPUT_STATE >= A_KEY) {
-				renderer.r_camera.TranslateRight(-cameraSpeed * g_DELTA_TIME);
+				renderer.r_camera.MoveRight(-cameraSpeed * g_DELTA_TIME);
 			}
 			else if (INPUT_STATE >= D_KEY) {
-				renderer.r_camera.TranslateRight(cameraSpeed * g_DELTA_TIME);
+				renderer.r_camera.MoveRight(cameraSpeed * g_DELTA_TIME);
 			}
 		}
 
