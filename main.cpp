@@ -66,14 +66,14 @@ int main() {
 	/* Buffer Data ---------------------------------------------*/
 
 	float cubeVertices[] = { // 24
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f
 	};
 
 	unsigned int cubeIndexes[] = { // 36
@@ -92,59 +92,59 @@ int main() {
 	};
 
 	float longCubeVertices[] = {
-		-8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
-		 8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
-		 8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
-		 8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
-		-8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
-		-8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-		-8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
-		 8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
-		 8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
-		 8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
-		-8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
-		-8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-		-8.0f,  8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
-		-8.0f,  8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
-		-8.0f, -8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
-		-8.0f, -8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
-		-8.0f, -8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
-		-8.0f,  8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-		 8.0f,  8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
-		 8.0f,  8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
-		 8.0f, -8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
-		 8.0f, -8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
-		 8.0f, -8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
-		 8.0f,  8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-		-8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
-		 8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
-		 8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
-		 8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
-		-8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
-		-8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-		-8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f,
-		 8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f,
-		 8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
-		 8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
-		-8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
-		-8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
-	const unsigned int numberOfBoids = 5000;
-	Boid* boids[numberOfBoids];
+	const unsigned int numberOfBoids = 4000;
+	Boid** boids = new Boid*[numberOfBoids]; // DELETE BOIDS AND BOIDS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		float x = (rand() % 1000 - 500) / 2.0f;
-		float y = (rand() % 1000 - 500) / 2.0f;
-		float z = (rand() % 1000 - 500) / 2.0f;
-		boids[i] = new Boid(glm::vec3(x, y, z), glm::vec3(x / 5.0f, y / 5.0f, z / 5.0f));
+		float x = (rand() % 1000 - 500) / 10.0f;
+		float y = (rand() % 1000 - 500) / 10.0f;
+		float z = (rand() % 1000 - 500) / 10.0f;
+		boids[i] = new Boid(glm::vec3(x, y, z), glm::vec3((rand() % 1000 - 500) / 100.0f, (rand() % 1000 - 500) / 100.0f, (rand() % 1000 - 500) / 100.0f), 5.0f);
 	}
 
-	glm::vec3 boidPositions[numberOfBoids];
+	glm::vec3* boidPositions = new glm::vec3[numberOfBoids]; // DELETE BOID POSITIONS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
 		boidPositions[i] = boids[i]->position;
 	}
@@ -187,11 +187,8 @@ int main() {
 	/* Camera vector data -------------------------------*/
 
 	float mouseSensitivity = 0.1f;
-	float cameraSpeed = 20.0f;
+	float cameraSpeed{};
 	float rotateSpeed = 90.0f;
-
-	/* Octree testing -------------------------*/
-
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -207,6 +204,12 @@ int main() {
 
 		std::vector<glm::vec3> octreeLinesData;
 		octree.GetVertices(&octreeLinesData);
+
+		std::vector<void*> queryResults;
+		octree.QueryCuboid(glm::vec3(-100.0f, -100.0f, -100.0f), glm::vec3(100.0f, 100.0f, 100.0f), &queryResults);
+		for (int i = 0; i < queryResults.size(); i++) {
+			static_cast<Boid*>(queryResults[i])->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
 
 		VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
 		VertexBufferLayout octreeVBL = VertexBufferLayout();
@@ -229,7 +232,7 @@ int main() {
 		glfwSwapBuffers(window);
 
 
-		/* Keyboard updates --------------------------*/
+		/* Input --------------------------*/
 
 		if (INPUT_STATE >= SPACE_KEY) {
 			cameraSpeed = 2000.0f;
@@ -297,4 +300,15 @@ int main() {
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();
+	for (int i = 0; i < numberOfBoids; i++) {
+		delete boids[i];
+	}
+	delete[] boids;
+	delete[] boidPositions;
+}
+
+void ComputeBoids(Boid** boids, unsigned int numBoids, Octree octree) {
+	for (unsigned int i = 0; i < numBoids; i++) { // for each boid
+		std::vector<void*> boidsInRange{};
+	}
 }
