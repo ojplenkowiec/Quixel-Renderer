@@ -1,5 +1,5 @@
-#ifndef VERTEX_BUFFER
-#define VERTEX_BUFFER
+#ifndef VERTEX_BUFFER_H
+#define VERTEX_BUFFER_H
 
 #include "debugging.h"
 
@@ -11,6 +11,8 @@ private:
 public:
 	VertexBuffer(const void* data, unsigned int size, unsigned int vertexCount);
 	~VertexBuffer();
+
+	void SubData(const void* data, unsigned int size);
 
 	void Bind() const;
 	void Unbind() const;

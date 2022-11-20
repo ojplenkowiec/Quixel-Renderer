@@ -41,6 +41,12 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="octree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="boid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="indexbuffer.h">
@@ -79,12 +85,21 @@
     <ClInclude Include="vertexbufferlayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="octree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="boid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.shader">
+    <None Include="normal.shader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="instance.shader">
+    <None Include="instanced_normal.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="basic.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

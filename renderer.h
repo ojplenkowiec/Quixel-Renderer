@@ -1,5 +1,5 @@
-#ifndef RENDERER
-#define RENDERER
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include "debugging.h"
 
@@ -24,6 +24,7 @@ public:
     void Draw(const VertexArray& va, const IndexBuffer& ib, Shader& shader);
     void Draw(const VertexArray& va, Shader& shader);
     void DrawInstancedArrays(const VertexArray& instanceVertexArray, Shader& instanceShader);
+    void DrawLines(const VertexArray& va, Shader& shader);
 };
 
 #endif

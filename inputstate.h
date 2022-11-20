@@ -1,5 +1,5 @@
-#ifndef INPUT_STATE_ENUM
-#define INPUT_STATE_ENUM
+#ifndef INPUT_STATE_H
+#define INPUT_STATE_H
 
 enum class InputState : std::uint32_t {
 	left_mouse =		0b00000000000000000000000000000001,

@@ -1,5 +1,5 @@
-#ifndef GLOBAL_VARIABLES
-#define GLOBAL_VARIABLES
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 #include "inputstate.h"
 #include <glfw3.h>

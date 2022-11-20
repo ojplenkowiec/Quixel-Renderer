@@ -1,5 +1,5 @@
-#ifndef CALLBACKS
-#define CALLBACKS
+#ifndef CALLBACKS_H
+#define CALLBACKS_H
 
 #include "debugging.h"
 

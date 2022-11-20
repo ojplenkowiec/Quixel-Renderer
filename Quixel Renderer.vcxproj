@@ -155,9 +155,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boid.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="indexbuffer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="octree.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -169,8 +171,10 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="debugging.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="boid.h" />
     <ClInclude Include="indexbuffer.h" />
     <ClInclude Include="inputstate.h" />
+    <ClInclude Include="octree.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
@@ -180,7 +184,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader" />
-    <None Include="instance.shader" />
+    <None Include="normal.shader" />
+    <None Include="instanced_normal.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GojoTexture256x256.png" />

@@ -2,7 +2,7 @@
 
 Camera::Camera(float screenAspectRatio, float fov, float nearDistance, float farDistance)
 {
-	c_PositionVector = glm::vec3(100.0f, 100.0f, 100.0f);
+	c_PositionVector = glm::vec3(10000.0f, 10000.0f, 10000.0f);
 
 	c_DirectionVector = glm::vec3(0.0f, 0.0f, -1.0f);
 	c_UpVector = glm::vec3(0.0f, 1.0f, 0.0f); // default values! make modifiable?

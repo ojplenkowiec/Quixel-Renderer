@@ -1,5 +1,5 @@
-#ifndef SHADER_PROGRAM_SOURCE
-#define SHADER_PROGRAM_SOURCE
+#ifndef SHADER_H
+#define SHADER_H
 
 #include "debugging.h"
 

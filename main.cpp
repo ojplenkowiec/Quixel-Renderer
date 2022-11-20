@@ -13,6 +13,8 @@
 #include "vertexarray.h"
 #include "shader.h"
 #include "texture.h"
+#include "octree.h"
+#include "boid.h"
 
 #include <iostream>
 #include <fstream>
@@ -20,6 +22,7 @@
 #include <sstream>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
+
 
 int main() {
 	glfwSetErrorCallback(glfwErrorCallback);
@@ -89,58 +92,62 @@ int main() {
 	};
 
 	float longCubeVertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
+		 8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
+		 8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
+		 8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
+		-8.0f,  8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
+		-8.0f, -8.0f, -8.0f,  0.0f,  0.0f, -1.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		 8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		 8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		 8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		-8.0f,  8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
+		-8.0f, -8.0f,  8.0f,  0.0f,  0.0f, 1.0f,
 
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-8.0f,  8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
+		-8.0f,  8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
+		-8.0f, -8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
+		-8.0f, -8.0f, -8.0f, -1.0f,  0.0f,  0.0f,
+		-8.0f, -8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
+		-8.0f,  8.0f,  8.0f, -1.0f,  0.0f,  0.0f,
 
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 8.0f,  8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
+		 8.0f,  8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
+		 8.0f, -8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
+		 8.0f, -8.0f, -8.0f,  1.0f,  0.0f,  0.0f,
+		 8.0f, -8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
+		 8.0f,  8.0f,  8.0f,  1.0f,  0.0f,  0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		-8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
+		 8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
+		 8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
+		 8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
+		-8.0f, -8.0f,  8.0f,  0.0f, -1.0f,  0.0f,
+		-8.0f, -8.0f, -8.0f,  0.0f, -1.0f,  0.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+		-8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f,
+		 8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f,
+		 8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
+		 8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
+		-8.0f,  8.0f,  8.0f,  0.0f,  1.0f,  0.0f,
+		-8.0f,  8.0f, -8.0f,  0.0f,  1.0f,  0.0f
 	};
 
-	std::vector<glm::vec3> cubePositions;
-	for (int i = 0; i < 50000; i++) {
-		float x = (rand() % 1000 - 500) / 10.0f;
-		float y = (rand() % 1000 - 500) / 10.0f;
-		float z = (rand() % 1000 - 500) / 10.0f;
-		cubePositions.push_back(glm::vec3(x, y, z)); // translations
-		cubePositions.push_back(glm::vec3((x + 50) / 100.0f, (y + 50) / 100.0f, (z + 50) / 100.0f)); // colors
+	const unsigned int numberOfBoids = 5000;
+	Boid* boids[numberOfBoids];
+	for (unsigned int i = 0; i < numberOfBoids; i++) {
+		float x = (rand() % 1000 - 500) / 2.0f;
+		float y = (rand() % 1000 - 500) / 2.0f;
+		float z = (rand() % 1000 - 500) / 2.0f;
+		boids[i] = new Boid(glm::vec3(x, y, z), glm::vec3(x / 5.0f, y / 5.0f, z / 5.0f));
 	}
 
+	glm::vec3 boidPositions[numberOfBoids];
+	for (unsigned int i = 0; i < numberOfBoids; i++) {
+		boidPositions[i] = boids[i]->position;
+	}
 	/* Buffer Creation -------------------------------*/
 
 	VertexBuffer cubeVB = VertexBuffer(cubeVertices, 24 * sizeof(float), 8);
@@ -153,10 +160,10 @@ int main() {
 	longCubeVBL.Push<float>(3);
 	longCubeVBL.Push<float>(3);
 
-	VertexBuffer cubeInstancesVB = VertexBuffer(&cubePositions[0], cubePositions.size() * sizeof(glm::vec3), cubePositions.size());
+	VertexBuffer cubeInstancesVB = VertexBuffer(&boidPositions[0], numberOfBoids * sizeof(glm::vec3), numberOfBoids);
 	VertexBufferLayout cubeInstancesVBL = VertexBufferLayout();
 	cubeInstancesVBL.Push<float>(3);
-	cubeInstancesVBL.Push<float>(3);
+	//cubeInstancesVBL.Push<float>(3);
 
 	/* VAO Creation ----------------------------------*/
 
@@ -167,9 +174,11 @@ int main() {
 
 	/* Shader Creation --------------------------*/
 
+	Shader normalShader = Shader("normal.shader");
+
 	Shader basicShader = Shader("basic.shader");
 
-	Shader instanceShader = Shader("instance.shader");
+	Shader instancedNormalShader = Shader("instanced_normal.shader");
 
 	/* Renderer instantiation --------------------------*/
 
@@ -178,34 +187,55 @@ int main() {
 	/* Camera vector data -------------------------------*/
 
 	float mouseSensitivity = 0.1f;
-	float cameraSpeed = 4.0f;
+	float cameraSpeed = 20.0f;
 	float rotateSpeed = 90.0f;
 
+	/* Octree testing -------------------------*/
+
+
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	while (glfwWindowShouldClose(window) != GLFW_TRUE) {
+		Octree octree = Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 32);
+		for (int i = 0; i < numberOfBoids; i++) {
+			octree.PushData(&boids[i]->position, boids[i]);
+		}
+
+		std::vector<glm::vec3> octreeLinesData;
+		octree.GetVertices(&octreeLinesData);
+
+		VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
+		VertexBufferLayout octreeVBL = VertexBufferLayout();
+		octreeVBL.Push<float>(3);
+		VertexArray octreeVAO = VertexArray(octreeVB, octreeVBL);
+
+		for (unsigned int i = 0; i < numberOfBoids; i++) {
+			boids[i]->Move(g_DELTA_TIME);
+			boidPositions[i] = boids[i]->position;
+		}
+		cubeInstancesVB.SubData(&boidPositions[0], numberOfBoids * sizeof(glm::vec3));
+
 		renderer.Clear();
-		updateDeltaTime(); // updates DELTA_TIME global
 
-		instanceShader.SetUniformMat4f("u_model", glm::mat4(1.0f));
-		//instanceShader.SetUniform3f("u_objectColor", 1.0, 1.0, 1.0);
+		updateDeltaTime();
 
-		basicShader.SetUniformMat4f("u_model", glm::mat4(1.0f));
-		basicShader.SetUniform3f("u_objectColor", 0.5, 0.5, 0.5);
-
-		renderer.DrawInstancedArrays(instancedLongCubeVAO, instanceShader);
-
-		// renderer.Draw(cubeVAO, cubeIB, basicShader);
+		renderer.DrawInstancedArrays(instancedLongCubeVAO, instancedNormalShader);
+		renderer.DrawLines(octreeVAO, basicShader);
 
 		glfwSwapBuffers(window);
+
 
 		/* Keyboard updates --------------------------*/
 
 		if (INPUT_STATE >= SPACE_KEY) {
-			cameraSpeed = 40.0f;
+			cameraSpeed = 2000.0f;
 		}
 		else {
-			cameraSpeed = 20.0f;
+			cameraSpeed = 500.0f;
 		}
 
 		if (!(INPUT_STATE >= SHIFT_KEY + CTRL_KEY)) {

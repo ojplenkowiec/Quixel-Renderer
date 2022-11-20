@@ -1,5 +1,5 @@
-#ifndef DEBUGGING_TOOLS
-    #define DEBUGGING_TOOLS
+#ifndef DEBUGGING_H
+    #define DEBUGGING_H
 
     #ifndef GLEW_STATIC
         #define GLEW_STATIC

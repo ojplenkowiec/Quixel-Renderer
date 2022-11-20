@@ -1,5 +1,5 @@
-#ifndef INDEX_BUFFER
-#define INDEX_BUFFER
+#ifndef INDEX_BUFFER_H
+#define INDEX_BUFFER_H
 
 #include "debugging.h"
 

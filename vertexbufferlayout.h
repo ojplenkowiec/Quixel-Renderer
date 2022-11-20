@@ -1,5 +1,5 @@
-#ifndef VERTEX_BUFFER_LAYOUT
-#define VERTEX_BUFFER_LAYOUT
+#ifndef VERTEX_BUFFER_LAYOUT_H
+#define VERTEX_BUFFER_LAYOUT_H
 
 #include "debugging.h"
 

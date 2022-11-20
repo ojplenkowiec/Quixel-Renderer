@@ -1,5 +1,5 @@
-#ifndef VERTEX_ARRAY
-#define VERTEX_ARRAY
+#ifndef VERTEX_ARRAY_H
+#define VERTEX_ARRAY_H
 
 #include "debugging.h"
 
