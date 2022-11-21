@@ -23,6 +23,45 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 
+void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
+	for (unsigned int i = 0; i < numBoids; i++) { // for each boid
+		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
+			boids[i]->velocity = (boids[i]->velocity / glm::length(boids[i]->velocity)) * 30.0f;
+		}
+		else {
+			boids[i]->velocity = glm::vec3(rand() % 1000 - 500.0f, rand() % 1000 - 500.0f, rand() % 1000 - 500.0f);
+			boids[i]->velocity = (boids[i]->velocity / glm::length(boids[i]->velocity)) * 30.0f;
+		}
+		std::vector<void*>* boidsInRange = new std::vector<void*>;
+		octree->QueryCuboid(boids[i]->position - glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boids[i]->position + glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boidsInRange);
+
+		unsigned int numberInRange = 0;
+		glm::vec3 averageVelocities = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 averagePositions = glm::vec3(0.0f, 0.0f, 0.0f);
+
+		if (boidsInRange->size() > 1) {
+			for (int j = 0; j < boidsInRange->size(); j++) {
+				if (static_cast<Boid*>(boidsInRange->at(j)) != boids[i]) {
+					glm::vec3 jToI = static_cast<Boid*>(boidsInRange->at(j))->position - boids[i]->position;
+					float distance = glm::length(jToI);
+					if (distance < 10) {
+						boids[i]->AddForce(-((jToI / distance) * (50.0f / distance)));
+					}
+					numberInRange++;
+
+					averageVelocities += static_cast<Boid*>(boidsInRange->at(j))->velocity;
+					averagePositions += static_cast<Boid*>(boidsInRange->at(j))->position;
+				}
+			}
+			averageVelocities /= static_cast<float>(numberInRange);
+			averagePositions /= static_cast<float>(numberInRange);
+
+			boids[i]->AddForce(averageVelocities - boids[i]->velocity);
+			boids[i]->AddForce(averagePositions - boids[i]->position);
+		}
+		delete(boidsInRange);
+	}
+}
 
 int main() {
 	glfwSetErrorCallback(glfwErrorCallback);
@@ -92,56 +131,56 @@ int main() {
 	};
 
 	float longCubeVertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
+		 2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
+		 2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
+		 2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
+		-2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
+		-2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		 2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		 2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		 2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		-2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		-2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
 
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-2.0f,  2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
+		-2.0f,  2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
+		-2.0f, -2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
+		-2.0f, -2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
+		-2.0f, -2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
+		-2.0f,  2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
 
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 2.0f,  2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
+		 2.0f,  2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
+		 2.0f, -2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
+		 2.0f, -2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
+		 2.0f, -2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
+		 2.0f,  2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		-2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
+		 2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
+		 2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
+		 2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
+		-2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
+		-2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+		-2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f,
+		 2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f,
+		 2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
+		 2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
+		-2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
+		-2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f
 	};
 
-	const unsigned int numberOfBoids = 4000;
+	const unsigned int numberOfBoids = 10000;
 	Boid** boids = new Boid*[numberOfBoids]; // DELETE BOIDS AND BOIDS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		float x = (rand() % 1000 - 500) / 10.0f;
-		float y = (rand() % 1000 - 500) / 10.0f;
-		float z = (rand() % 1000 - 500) / 10.0f;
-		boids[i] = new Boid(glm::vec3(x, y, z), glm::vec3((rand() % 1000 - 500) / 100.0f, (rand() % 1000 - 500) / 100.0f, (rand() % 1000 - 500) / 100.0f), 5.0f);
+		float x = (rand() % 1000 - 500) / 1.0f;
+		float y = (rand() % 1000 - 500) / 1.0f;
+		float z = (rand() % 1000 - 500) / 1.0f;
+		boids[i] = new Boid(glm::vec3(x, y, z), 15.0f);
 	}
 
 	glm::vec3* boidPositions = new glm::vec3[numberOfBoids]; // DELETE BOID POSITIONS ARRAY
@@ -197,19 +236,20 @@ int main() {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	while (glfwWindowShouldClose(window) != GLFW_TRUE) {
-		Octree octree = Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 32);
+		Octree* octree = new Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 32);
 		for (int i = 0; i < numberOfBoids; i++) {
-			octree.PushData(&boids[i]->position, boids[i]);
+			octree->PushData(&boids[i]->position, boids[i]);
 		}
 
 		std::vector<glm::vec3> octreeLinesData;
-		octree.GetVertices(&octreeLinesData);
+		octree->GetVertices(&octreeLinesData);
 
-		std::vector<void*> queryResults;
+		/*std::vector<void*> queryResults;
 		octree.QueryCuboid(glm::vec3(-100.0f, -100.0f, -100.0f), glm::vec3(100.0f, 100.0f, 100.0f), &queryResults);
 		for (int i = 0; i < queryResults.size(); i++) {
 			static_cast<Boid*>(queryResults[i])->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-		}
+		}*/
+		ComputeBoids(boids, numberOfBoids, octree);
 
 		VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
 		VertexBufferLayout octreeVBL = VertexBufferLayout();
@@ -297,6 +337,7 @@ int main() {
 		/* Poll events --------------------------------------*/
 
 		glfwPollEvents();
+		delete octree;
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -305,10 +346,4 @@ int main() {
 	}
 	delete[] boids;
 	delete[] boidPositions;
-}
-
-void ComputeBoids(Boid** boids, unsigned int numBoids, Octree octree) {
-	for (unsigned int i = 0; i < numBoids; i++) { // for each boid
-		std::vector<void*> boidsInRange{};
-	}
 }

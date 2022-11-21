@@ -25,6 +25,7 @@ void Boid::Move(float deltaTime)
 	if (forceBuffer.x || forceBuffer.y || forceBuffer.z) {
 		position += (velocity * deltaTime) + (0.5f * forceBuffer * deltaTime * deltaTime);
 		velocity += forceBuffer * deltaTime;
+		forceBuffer = glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 	else {
 		position += velocity * deltaTime;
