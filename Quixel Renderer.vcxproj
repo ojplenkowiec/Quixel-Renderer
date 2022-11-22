@@ -185,6 +185,7 @@
     <ClInclude Include="indexbuffer.h" />
     <ClInclude Include="inputstate.h" />
     <ClInclude Include="octree.h" />
+    <ClInclude Include="raycast.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
