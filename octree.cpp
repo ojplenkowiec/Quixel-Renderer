@@ -587,3 +587,57 @@ void Octree::QueryCuboid(glm::vec3 cuboidMin, glm::vec3 cuboidMax, std::vector<v
 	}
 }
 
+void Octree::QueryRay(glm::vec3 rayCastLocation, glm::vec3 rayDirection, std::vector<void*>* vectorResultPointer)
+{
+	// for each
+	// check if data...
+	// if data then find closest point on cube to A
+	// calculate the inverse matrices for triangles of adjacent planes, check all to see if any intersect as going along as if they do we can stop
+	// if intersect, see if branched
+	// if branched, query ray of branch
+	// if not branched, retrieve data
+
+	glm::vec3 ray = rayDirection - rayCastLocation;
+
+	glm::vec3 raysToPoints[8]{};
+	raysToPoints[0] = minPoint - rayCastLocation;
+	raysToPoints[1] = glm::vec3(maxPoint.x, minPoint.y, minPoint.z) - rayCastLocation;
+	raysToPoints[2] = glm::vec3(maxPoint.x, minPoint.y, maxPoint.z) - rayCastLocation;
+	raysToPoints[3] = glm::vec3(minPoint.x, minPoint.y, maxPoint.z) - rayCastLocation;
+	raysToPoints[4] = glm::vec3(minPoint.x, maxPoint.y, minPoint.z) - rayCastLocation;
+	raysToPoints[5] = glm::vec3(maxPoint.x, maxPoint.y, minPoint.z) - rayCastLocation;
+	raysToPoints[6] = maxPoint - rayCastLocation;
+	raysToPoints[7] = glm::vec3(minPoint.x, maxPoint.y, maxPoint.z) - rayCastLocation;
+
+	glm::mat3x3 currentMatrix = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2]));
+	glm::vec3 result = currentMatrix * ray;
+	if (ray.x > 0 && ray.y > 0 && ray.z > 0) {
+		// collided!
+	}
+}
+
+/*void GetVertices() {
+	glm::vec3 minPoint;
+	glm::vec3 maxPoint;
+
+	glm::vec3 points[7]{};
+
+	points[0] = minPoint;
+	points[1] = glm::vec3(maxPoint.x, minPoint.y, minPoint.z);
+	points[2] = glm::vec3(maxPoint.x, minPoint.y, maxPoint.z);
+	points[3] = glm::vec3(minPoint.x, minPoint.y, maxPoint.z);
+	points[4] = glm::vec3(minPoint.x, maxPoint.y, minPoint.z);
+	points[5] = glm::vec3(maxPoint.x, maxPoint.y, minPoint.z);
+	points[6] = maxPoint;
+	points[7] = glm::vec3(minPoint.x, maxPoint.y, maxPoint.z);
+
+	unsigned int quads[] = {
+		1, 2, 3, 4,
+		2, 3, 7, 6,
+		3, 4, 7, 8,
+		1, 2, 6, 5,
+		1, 4, 8, 5,
+		5, 6, 7, 8
+	}
+
+}*/

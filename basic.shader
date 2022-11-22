@@ -19,7 +19,7 @@ layout(location = 0) out vec4 out_color;
 
 void main()
 {
-    vec3 finalColor = vec3(0.0, 0.5, 0.0);
+    vec3 finalColor = vec3(1.0, 0.0, 0.0);
 
-    out_color = vec4(finalColor, 0.4);
+    out_color = vec4(finalColor, 0.2);
 };

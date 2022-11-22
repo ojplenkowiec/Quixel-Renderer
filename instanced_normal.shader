@@ -33,19 +33,19 @@ in vec3 out_fragPos;
 uniform vec3 u_lightPos = vec3(100000.0, 100000.0, 30000.0);
 uniform vec3 u_lightColor = vec3(1.0, 1.0, 1.0);
 uniform vec3 u_viewPos;
-uniform vec3 u_objectColor = vec3(1.0, 0.1, 0.1);
+uniform vec3 u_objectColor = vec3(0.2, 0.98, 0.78);
 
 void main()
 {
-    float ambientStrength = 0.5;
+    float ambientStrength = 0.7;
     float ambientLight = ambientStrength;
 
-    float diffusionStrength = 0.6;
+    float diffusionStrength = 0.3;
     vec3 lightDir = normalize(u_lightPos - out_fragPos);
     float diffusionValue = max(dot(out_normal, lightDir), 0.0);
     float diffusedLight = diffusionStrength * diffusionValue;
 
-    float specularStrength = 1.0;
+    float specularStrength = 0.3;
     vec3 viewDir = normalize(u_viewPos - out_fragPos);
     vec3 reflectDir = reflect(-lightDir, out_normal);
     float specularValue = pow(max(dot(viewDir, reflectDir), 0.0), 2);

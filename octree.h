@@ -31,6 +31,7 @@ public:
 	void GetVertices(std::vector<glm::vec3>* vectorPointer);
 
 	void QueryCuboid(glm::vec3 cuboidMin, glm::vec3 cuboidMax, std::vector<void*>* vectorResultPointer);
+	void QueryRay(glm::vec3 rayCastLocation, glm::vec3 rayDirection, std::vector<void*>* vectorResultPointer);
 };
 
 #endif

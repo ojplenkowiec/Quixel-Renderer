@@ -102,6 +102,11 @@
       <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx32\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <DiagnosticsFormat>Classic</DiagnosticsFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +149,11 @@
       <AdditionalIncludeDirectories>C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;%(AdditionalIncludeDirectories);C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\Oscar Pope-Lenkowiec\Documents\Visual Studio 2022\External Libraries\STB;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLFWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLEWx64\include;C:\Users\user\Documents\Visual Studio 2022\External Libraries\GLM;C:\Users\user\Documents\Visual Studio 2022\External Libraries\STB</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <DiagnosticsFormat>Classic</DiagnosticsFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

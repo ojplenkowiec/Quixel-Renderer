@@ -22,48 +22,86 @@
 #include <sstream>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <random>
+
+int irand(int min, int max) {
+	return ((double)rand() / ((double)RAND_MAX + 1.0)) * (max - min + 1) + min;
+}
 
 void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
-	for (unsigned int i = 0; i < numBoids; i++) { // for each boid
-		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
-			boids[i]->velocity = (boids[i]->velocity / glm::length(boids[i]->velocity)) * 30.0f;
-		}
-		else {
-			boids[i]->velocity = glm::vec3(rand() % 1000 - 500.0f, rand() % 1000 - 500.0f, rand() % 1000 - 500.0f);
-			boids[i]->velocity = (boids[i]->velocity / glm::length(boids[i]->velocity)) * 30.0f;
-		}
-		std::vector<void*>* boidsInRange = new std::vector<void*>;
+	float avoianceRadiusSquared = 200.0f;
+	float avoidanceStrength = 40.0f;
+
+	unsigned int i{};
+	unsigned int j{}; // increments for speed
+
+	unsigned int numberInQueryRangeIncludingSelf{};
+	unsigned int numberInInteractionRadius{};
+
+	glm::vec3 averageVelocities{};
+	glm::vec3 averagePositions{};
+	glm::vec3 otherToSelfVector{};
+
+	float distanceSquared{};
+
+	std::vector<void*>* boidsInRange = new std::vector<void*>{};
+
+	while (i < numBoids) { // for each boid
+		boids[i]->forceBuffer.x += irand(-1000, 1000) / 100.0f;
+		boids[i]->forceBuffer.y += irand(-1000, 1000) / 100.0f;
+		boids[i]->forceBuffer.z += irand(-1000, 1000) / 100.0f;
+
+		boidsInRange->clear();
 		octree->QueryCuboid(boids[i]->position - glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boids[i]->position + glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boidsInRange);
 
-		unsigned int numberInRange = 0;
-		glm::vec3 averageVelocities = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 averagePositions = glm::vec3(0.0f, 0.0f, 0.0f);
+		numberInQueryRangeIncludingSelf = boidsInRange->size();
 
-		if (boidsInRange->size() > 1) {
-			for (int j = 0; j < boidsInRange->size(); j++) {
-				if (static_cast<Boid*>(boidsInRange->at(j)) != boids[i]) {
-					glm::vec3 jToI = static_cast<Boid*>(boidsInRange->at(j))->position - boids[i]->position;
-					float distance = glm::length(jToI);
-					if (distance < 10) {
-						boids[i]->AddForce(-((jToI / distance) * (50.0f / distance)));
+		if (numberInQueryRangeIncludingSelf > 1) { // not just self
+			averageVelocities.x = 0.0f;
+			averageVelocities.y = 0.0f;
+			averageVelocities.z = 0.0f;
+
+			averagePositions.x = 0.0f;
+			averagePositions.y = 0.0f;
+			averagePositions.z = 0.0f;
+
+			numberInInteractionRadius = 0;
+
+			j = 0;
+			while (j < numberInQueryRangeIncludingSelf) {
+				otherToSelfVector = boids[i]->position - (static_cast<Boid*>(boidsInRange->at(j))->position);
+				distanceSquared = (otherToSelfVector.x * otherToSelfVector.x) + (otherToSelfVector.y * otherToSelfVector.y) + (otherToSelfVector.z * otherToSelfVector.z);
+				if (distanceSquared != 0.0f) {
+					if (distanceSquared < boids[i]->viewRadius * boids[i]->viewRadius) {
+						numberInInteractionRadius++;
+						if (distanceSquared < avoianceRadiusSquared) {
+							boids[i]->AddForce((otherToSelfVector * avoidanceStrength) / distanceSquared);
+						}
+						averageVelocities += static_cast<Boid*>(boidsInRange->at(j))->velocity;
+						averagePositions += static_cast<Boid*>(boidsInRange->at(j))->position;
 					}
-					numberInRange++;
-
-					averageVelocities += static_cast<Boid*>(boidsInRange->at(j))->velocity;
-					averagePositions += static_cast<Boid*>(boidsInRange->at(j))->position;
 				}
+				j++;
 			}
-			averageVelocities /= static_cast<float>(numberInRange);
-			averagePositions /= static_cast<float>(numberInRange);
-
-			boids[i]->AddForce(averageVelocities - boids[i]->velocity);
-			boids[i]->AddForce(averagePositions - boids[i]->position);
+			boids[i]->AddForce((averageVelocities / static_cast<float>(numberInInteractionRadius) - boids[i]->velocity) * 2.0f);
+			boids[i]->AddForce((averagePositions / static_cast<float>(numberInInteractionRadius) - boids[i]->position) * 1.0f);
 		}
-		delete(boidsInRange);
+		boids[i]->Move(g_DELTA_TIME);
+		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
+			boids[i]->velocity *= 10.0f / glm::length(boids[i]->velocity);
+		}
+		else {
+			boids[i]->velocity.x += irand(-1000, 1000) / 100.0f;
+			boids[i]->velocity.y += irand(-1000, 1000) / 100.0f;
+			boids[i]->velocity.z += irand(-1000, 1000) / 100.0f;
+		}
+		i++;
 	}
+	delete(boidsInRange); // cleanup heap
 }
 
 int main() {
+
 	glfwSetErrorCallback(glfwErrorCallback);
 	if (glfwInit() != GLFW_TRUE) {
 		throw std::runtime_error("Couldn't initialize GLFW!");
@@ -93,7 +131,7 @@ int main() {
 		throw std::runtime_error("Couldn't initialize GLEW!");
 	}
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	/* GLFW Callbacks --------------------------------------------*/
 
@@ -131,56 +169,56 @@ int main() {
 	};
 
 	float longCubeVertices[] = {
-		-2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
-		 2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
-		 2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
-		 2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
-		-2.0f,  2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
-		-2.0f, -2.0f, -2.0f,  0.0f,  0.0f, -1.0f,
+		-0.75f, -0.75f, -0.75f,  0.0f,  0.0f, -1.0f, // LONG AS FUCKKKK
+		 0.75f, -0.75f, -0.75f,  0.0f,  0.0f, -1.0f,
+		 0.75f,  0.75f, -0.75f,  0.0f,  0.0f, -1.0f,
+		 0.75f,  0.75f, -0.75f,  0.0f,  0.0f, -1.0f,
+		-0.75f,  0.75f, -0.75f,  0.0f,  0.0f, -1.0f,
+		-0.75f, -0.75f, -0.75f,  0.0f,  0.0f, -1.0f,
 
-		-2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
-		 2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
-		 2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
-		 2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
-		-2.0f,  2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
-		-2.0f, -2.0f,  2.0f,  0.0f,  0.0f, 1.0f,
+		-0.75f, -0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
+		 0.75f, -0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
+		 0.75f,  0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
+		 0.75f,  0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
+		-0.75f,  0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
+		-0.75f, -0.75f,  0.75f,  0.0f,  0.0f, 1.0f,
 
-		-2.0f,  2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
-		-2.0f,  2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
-		-2.0f, -2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
-		-2.0f, -2.0f, -2.0f, -1.0f,  0.0f,  0.0f,
-		-2.0f, -2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
-		-2.0f,  2.0f,  2.0f, -1.0f,  0.0f,  0.0f,
+		-0.75f,  0.75f,  0.75f, -1.0f,  0.0f,  0.0f,
+		-0.75f,  0.75f, -0.75f, -1.0f,  0.0f,  0.0f,
+		-0.75f, -0.75f, -0.75f, -1.0f,  0.0f,  0.0f,
+		-0.75f, -0.75f, -0.75f, -1.0f,  0.0f,  0.0f,
+		-0.75f, -0.75f,  0.75f, -1.0f,  0.0f,  0.0f,
+		-0.75f,  0.75f,  0.75f, -1.0f,  0.0f,  0.0f,
 
-		 2.0f,  2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
-		 2.0f,  2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
-		 2.0f, -2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
-		 2.0f, -2.0f, -2.0f,  1.0f,  0.0f,  0.0f,
-		 2.0f, -2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
-		 2.0f,  2.0f,  2.0f,  1.0f,  0.0f,  0.0f,
+		 0.75f,  0.75f,  0.75f,  1.0f,  0.0f,  0.0f,
+		 0.75f,  0.75f, -0.75f,  1.0f,  0.0f,  0.0f,
+		 0.75f, -0.75f, -0.75f,  1.0f,  0.0f,  0.0f,
+		 0.75f, -0.75f, -0.75f,  1.0f,  0.0f,  0.0f,
+		 0.75f, -0.75f,  0.75f,  1.0f,  0.0f,  0.0f,
+		 0.75f,  0.75f,  0.75f,  1.0f,  0.0f,  0.0f,
 
-		-2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
-		 2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
-		 2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
-		 2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
-		-2.0f, -2.0f,  2.0f,  0.0f, -1.0f,  0.0f,
-		-2.0f, -2.0f, -2.0f,  0.0f, -1.0f,  0.0f,
+		-0.75f, -0.75f, -0.75f,  0.0f, -1.0f,  0.0f,
+		 0.75f, -0.75f, -0.75f,  0.0f, -1.0f,  0.0f,
+		 0.75f, -0.75f,  0.75f,  0.0f, -1.0f,  0.0f,
+		 0.75f, -0.75f,  0.75f,  0.0f, -1.0f,  0.0f,
+		-0.75f, -0.75f,  0.75f,  0.0f, -1.0f,  0.0f,
+		-0.75f, -0.75f, -0.75f,  0.0f, -1.0f,  0.0f,
 
-		-2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f,
-		 2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f,
-		 2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
-		 2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
-		-2.0f,  2.0f,  2.0f,  0.0f,  1.0f,  0.0f,
-		-2.0f,  2.0f, -2.0f,  0.0f,  1.0f,  0.0f
+		-0.75f,  0.75f, -0.75f,  0.0f,  1.0f,  0.0f,
+		 0.75f,  0.75f, -0.75f,  0.0f,  1.0f,  0.0f,
+		 0.75f,  0.75f,  0.75f,  0.0f,  1.0f,  0.0f,
+		 0.75f,  0.75f,  0.75f,  0.0f,  1.0f,  0.0f,
+		-0.75f,  0.75f,  0.75f,  0.0f,  1.0f,  0.0f,
+		-0.75f,  0.75f, -0.75f,  0.0f,  1.0f,  0.0f
 	};
 
-	const unsigned int numberOfBoids = 10000;
+	const unsigned int numberOfBoids = 5000;
 	Boid** boids = new Boid*[numberOfBoids]; // DELETE BOIDS AND BOIDS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		float x = (rand() % 1000 - 500) / 1.0f;
-		float y = (rand() % 1000 - 500) / 1.0f;
-		float z = (rand() % 1000 - 500) / 1.0f;
-		boids[i] = new Boid(glm::vec3(x, y, z), 15.0f);
+		float x = irand(-30000, 30000);
+		float y = irand(-30000, 30000);
+		float z = irand(-30000, 30000);
+		boids[i] = new Boid(glm::vec3(x / 100.0f, y / 100.0f, z / 100.0f), 30.0f);
 	}
 
 	glm::vec3* boidPositions = new glm::vec3[numberOfBoids]; // DELETE BOID POSITIONS ARRAY
@@ -225,9 +263,10 @@ int main() {
 
 	/* Camera vector data -------------------------------*/
 
-	float mouseSensitivity = 0.1f;
+	float mouseSensitivity = 0.15f;
 	float cameraSpeed{};
 	float rotateSpeed = 90.0f;
+	bool gridOn = false;
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -236,7 +275,10 @@ int main() {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	while (glfwWindowShouldClose(window) != GLFW_TRUE) {
-		Octree* octree = new Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 32);
+		renderer.Clear();
+		updateDeltaTime();
+
+		Octree* octree = new Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 16);
 		for (int i = 0; i < numberOfBoids; i++) {
 			octree->PushData(&boids[i]->position, boids[i]);
 		}
@@ -244,30 +286,22 @@ int main() {
 		std::vector<glm::vec3> octreeLinesData;
 		octree->GetVertices(&octreeLinesData);
 
-		/*std::vector<void*> queryResults;
-		octree.QueryCuboid(glm::vec3(-100.0f, -100.0f, -100.0f), glm::vec3(100.0f, 100.0f, 100.0f), &queryResults);
-		for (int i = 0; i < queryResults.size(); i++) {
-			static_cast<Boid*>(queryResults[i])->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-		}*/
 		ComputeBoids(boids, numberOfBoids, octree);
 
-		VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
-		VertexBufferLayout octreeVBL = VertexBufferLayout();
-		octreeVBL.Push<float>(3);
-		VertexArray octreeVAO = VertexArray(octreeVB, octreeVBL);
+		if (gridOn) {
+			VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
+			VertexBufferLayout octreeVBL = VertexBufferLayout();
+			octreeVBL.Push<float>(3);
+			VertexArray octreeVAO = VertexArray(octreeVB, octreeVBL);
+			renderer.DrawLines(octreeVAO, basicShader);
+		}
 
 		for (unsigned int i = 0; i < numberOfBoids; i++) {
-			boids[i]->Move(g_DELTA_TIME);
 			boidPositions[i] = boids[i]->position;
 		}
 		cubeInstancesVB.SubData(&boidPositions[0], numberOfBoids * sizeof(glm::vec3));
 
-		renderer.Clear();
-
-		updateDeltaTime();
-
 		renderer.DrawInstancedArrays(instancedLongCubeVAO, instancedNormalShader);
-		renderer.DrawLines(octreeVAO, basicShader);
 
 		glfwSwapBuffers(window);
 
@@ -328,11 +362,20 @@ int main() {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 
+		if (INPUT_STATE >= Q_KEY) {
+			gridOn = true;
+		}
+		else {
+			gridOn = false;
+		}
+
 		/* Mouse updates ----------------------------------------------*/ //INPUTS CLASS FOR RESETTING GLOBAL VARIABLES ETC NEEDED//
 
-		renderer.r_camera.Rotate(-g_MOUSE_Y_DIFFERENCE * mouseSensitivity, g_MOUSE_X_DIFFERENCE * mouseSensitivity);
-		g_MOUSE_X_DIFFERENCE = 0.0;
-		g_MOUSE_Y_DIFFERENCE = 0.0;
+		if (INPUT_STATE >= RIGHT_MOUSE_BUTTON) {
+			renderer.r_camera.Rotate(-g_MOUSE_Y_DIFFERENCE * mouseSensitivity, g_MOUSE_X_DIFFERENCE * mouseSensitivity);
+			g_MOUSE_X_DIFFERENCE = 0.0;
+			g_MOUSE_Y_DIFFERENCE = 0.0;
+		}
 
 		/* Poll events --------------------------------------*/
 
