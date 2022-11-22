@@ -32,6 +32,7 @@ public:
 
 	void QueryCuboid(glm::vec3 cuboidMin, glm::vec3 cuboidMax, std::vector<void*>* vectorResultPointer);
 	void QueryRay(glm::vec3 rayCastLocation, glm::vec3 rayDirection, std::vector<void*>* vectorResultPointer);
+	void* RayCast(glm::vec3 origin, glm::vec3 rayDirection, float maxDistanceFromRay, std::vector<Node*>* rayCollisionNodes = new std::vector<Node*>{});
 };
 
 #endif
