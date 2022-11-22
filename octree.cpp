@@ -600,44 +600,1154 @@ void Octree::QueryRay(glm::vec3 rayCastLocation, glm::vec3 rayDirection, std::ve
 	glm::vec3 ray = rayDirection - rayCastLocation;
 
 	glm::vec3 raysToPoints[8]{};
-	raysToPoints[0] = minPoint - rayCastLocation;
-	raysToPoints[1] = glm::vec3(maxPoint.x, minPoint.y, minPoint.z) - rayCastLocation;
-	raysToPoints[2] = glm::vec3(maxPoint.x, minPoint.y, maxPoint.z) - rayCastLocation;
-	raysToPoints[3] = glm::vec3(minPoint.x, minPoint.y, maxPoint.z) - rayCastLocation;
-	raysToPoints[4] = glm::vec3(minPoint.x, maxPoint.y, minPoint.z) - rayCastLocation;
-	raysToPoints[5] = glm::vec3(maxPoint.x, maxPoint.y, minPoint.z) - rayCastLocation;
-	raysToPoints[6] = maxPoint - rayCastLocation;
-	raysToPoints[7] = glm::vec3(minPoint.x, maxPoint.y, maxPoint.z) - rayCastLocation;
 
-	glm::mat3x3 currentMatrix = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2]));
-	glm::vec3 result = currentMatrix * ray;
-	if (ray.x > 0 && ray.y > 0 && ray.z > 0) {
-		// collided!
+	glm::vec3 localMinPoint{};
+	glm::vec3 localMaxPoint{};
+
+	glm::vec3 result{};
+
+	if (storedData[0]) {
+		localMinPoint = minPoint;
+		localMaxPoint = midPoint;
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b10000000) {
+				static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b10000000) {
+					static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b10000000) {
+						static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b10000000) {
+							static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b10000000) {
+								static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b10000000) {
+									static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b10000000) {
+										static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b10000000) {
+											static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b10000000) {
+												static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b10000000) {
+													static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b10000000) {
+														static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b10000000) {
+															static_cast<Octree*>(storedData[0])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[0])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[1]) {
+		localMinPoint = glm::vec3(midPoint.x, minPoint.y, minPoint.z);
+		localMaxPoint = glm::vec3(maxPoint.x, midPoint.y, midPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b01000000) {
+				static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b01000000) {
+					static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b01000000) {
+						static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b01000000) {
+							static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b01000000) {
+								static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b01000000) {
+									static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b01000000) {
+										static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b01000000) {
+											static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b01000000) {
+												static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b01000000) {
+													static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b01000000) {
+														static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b01000000) {
+															static_cast<Octree*>(storedData[1])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[1])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[2]) {
+		localMinPoint = glm::vec3(midPoint.x, minPoint.y, midPoint.z);
+		localMaxPoint = glm::vec3(maxPoint.x, midPoint.y, maxPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00100000) {
+				static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00100000) {
+					static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00100000) {
+						static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00100000) {
+							static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00100000) {
+								static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00100000) {
+									static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00100000) {
+										static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00100000) {
+											static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00100000) {
+												static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00100000) {
+													static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00100000) {
+														static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00100000) {
+															static_cast<Octree*>(storedData[2])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[2])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[3]) {
+		localMinPoint = glm::vec3(minPoint.x, minPoint.y, midPoint.z);
+		localMaxPoint = glm::vec3(midPoint.x, midPoint.y, maxPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00010000) {
+				static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00010000) {
+					static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00010000) {
+						static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00010000) {
+							static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00010000) {
+								static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00010000) {
+									static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00010000) {
+										static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00010000) {
+											static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00010000) {
+												static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00010000) {
+													static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00010000) {
+														static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00010000) {
+															static_cast<Octree*>(storedData[3])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[3])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[4]) {
+		localMinPoint = glm::vec3(minPoint.x, midPoint.y, minPoint.z);
+		localMaxPoint = glm::vec3(midPoint.x, maxPoint.y, midPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00001000) {
+				static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00001000) {
+					static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00001000) {
+						static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00001000) {
+							static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00001000) {
+								static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00001000) {
+									static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00001000) {
+										static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00001000) {
+											static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00001000) {
+												static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00001000) {
+													static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00001000) {
+														static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00001000) {
+															static_cast<Octree*>(storedData[4])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[4])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[5]) {
+		localMinPoint = glm::vec3(midPoint.x, midPoint.y, minPoint.z);
+		localMaxPoint = glm::vec3(maxPoint.x, maxPoint.y, midPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00000100) {
+				static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00000100) {
+					static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00000100) {
+						static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00000100) {
+							static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00000100) {
+								static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00000100) {
+									static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00000100) {
+										static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00000100) {
+											static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00000100) {
+												static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00000100) {
+													static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00000100) {
+														static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00000100) {
+															static_cast<Octree*>(storedData[5])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[5])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[6]) {
+		localMinPoint = midPoint;
+		localMaxPoint = maxPoint;
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00000010) {
+				static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00000010) {
+					static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00000010) {
+						static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00000010) {
+							static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00000010) {
+								static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00000010) {
+									static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00000010) {
+										static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00000010) {
+											static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00000010) {
+												static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00000010) {
+													static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00000010) {
+														static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00000010) {
+															static_cast<Octree*>(storedData[6])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[6])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (storedData[7]) {
+		localMinPoint = glm::vec3(minPoint.x, midPoint.y, midPoint.z);
+		localMaxPoint = glm::vec3(midPoint.x, maxPoint.y, maxPoint.z);
+
+		raysToPoints[0] = localMinPoint - rayCastLocation;
+		raysToPoints[1] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMinPoint.z) - rayCastLocation;
+		raysToPoints[2] = glm::vec3(localMaxPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+		result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[2])) * ray;
+		if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+			if (branchState & 0b00000001) {
+				static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+			}
+			else {
+				vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+			}
+		}
+		else {
+			raysToPoints[3] = glm::vec3(localMinPoint.x, localMinPoint.y, localMaxPoint.z) - rayCastLocation;
+			result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[2], raysToPoints[3])) * ray;
+			if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+				if (branchState & 0b00000001) {
+					static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+				}
+				else {
+					vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+				}
+			}
+			else {
+				raysToPoints[6] = localMaxPoint - rayCastLocation;
+				result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[2], raysToPoints[6])) * ray;
+				if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+					if (branchState & 0b00000001) {
+						static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+					}
+					else {
+						vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+					}
+				}
+				else {
+					raysToPoints[5] = glm::vec3(localMaxPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+					result = glm::inverse(glm::mat3x3(raysToPoints[1], raysToPoints[6], raysToPoints[5])) * ray;
+					if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+						if (branchState & 0b00000001) {
+							static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+						}
+						else {
+							vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+						}
+					}
+					else {
+						result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[3], raysToPoints[6])) * ray;
+						if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+							if (branchState & 0b00000001) {
+								static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+							}
+							else {
+								vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+							}
+						}
+						else {
+							raysToPoints[7] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMaxPoint.z) - rayCastLocation;
+							result = glm::inverse(glm::mat3x3(raysToPoints[2], raysToPoints[6], raysToPoints[7])) * ray;
+							if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+								if (branchState & 0b00000001) {
+									static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+								}
+								else {
+									vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+								}
+							}
+							else {
+								result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[1], raysToPoints[5])) * ray;
+								if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+									if (branchState & 0b00000001) {
+										static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+									}
+									else {
+										vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+									}
+								}
+								else {
+									raysToPoints[4] = glm::vec3(localMinPoint.x, localMaxPoint.y, localMinPoint.z) - rayCastLocation;
+									result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[5], raysToPoints[4])) * ray;
+									if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+										if (branchState & 0b00000001) {
+											static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+										}
+										else {
+											vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+										}
+									}
+									else {
+										result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[3], raysToPoints[7])) * ray;
+										if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+											if (branchState & 0b00000001) {
+												static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+											}
+											else {
+												vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+											}
+										}
+										else {
+											result = glm::inverse(glm::mat3x3(raysToPoints[0], raysToPoints[7], raysToPoints[4])) * ray;
+											if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+												if (branchState & 0b00000001) {
+													static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+												}
+												else {
+													vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+												}
+											}
+											else {
+												result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[5], raysToPoints[6])) * ray;
+												if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+													if (branchState & 0b00000001) {
+														static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+													}
+													else {
+														vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+													}
+												}
+												else {
+													result = glm::inverse(glm::mat3x3(raysToPoints[4], raysToPoints[6], raysToPoints[7])) * ray;
+													if (result.x > 0.0f && result.y > 0.0f && result.z > 0.0f) {
+														if (branchState & 0b00000001) {
+															static_cast<Octree*>(storedData[7])->QueryRay(rayCastLocation, rayDirection, vectorResultPointer);
+														}
+														else {
+															vectorResultPointer->push_back(static_cast<Node*>(storedData[7])->dataPointer);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
-
-/*void GetVertices() {
-	glm::vec3 minPoint;
-	glm::vec3 maxPoint;
-
-	glm::vec3 points[7]{};
-
-	points[0] = minPoint;
-	points[1] = glm::vec3(maxPoint.x, minPoint.y, minPoint.z);
-	points[2] = glm::vec3(maxPoint.x, minPoint.y, maxPoint.z);
-	points[3] = glm::vec3(minPoint.x, minPoint.y, maxPoint.z);
-	points[4] = glm::vec3(minPoint.x, maxPoint.y, minPoint.z);
-	points[5] = glm::vec3(maxPoint.x, maxPoint.y, minPoint.z);
-	points[6] = maxPoint;
-	points[7] = glm::vec3(minPoint.x, maxPoint.y, maxPoint.z);
-
-	unsigned int quads[] = {
-		1, 2, 3, 4,
-		2, 3, 7, 6,
-		3, 4, 7, 8,
-		1, 2, 6, 5,
-		1, 4, 8, 5,
-		5, 6, 7, 8
-	}
-
-}*/

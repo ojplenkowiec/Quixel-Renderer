@@ -5,9 +5,11 @@ layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 
 layout(location = 2) in vec3 in_instanceTranslation;
+layout(location = 3) in vec3 in_instanceColor;
 
 out vec3 out_normal;
 out vec3 out_fragPos;
+out vec3 out_instanceColor;
 
 uniform mat4 u_model = mat4(1.0);
 uniform mat4 u_view;
@@ -20,6 +22,7 @@ void main()
     out_normal = mat3(transpose(inverse(u_model))) * in_normal;
 
     out_fragPos = vec3(u_model * vec4(in_position, 1.0));
+    out_instanceColor = in_instanceColor;
 };
 
 #shader fragment
@@ -29,6 +32,7 @@ layout(location = 0) out vec4 out_color;
 
 in vec3 out_normal;
 in vec3 out_fragPos;
+in vec3 out_instanceColor;
 
 uniform vec3 u_lightPos = vec3(100000.0, 100000.0, 30000.0);
 uniform vec3 u_lightColor = vec3(1.0, 1.0, 1.0);
@@ -51,7 +55,7 @@ void main()
     float specularValue = pow(max(dot(viewDir, reflectDir), 0.0), 2);
     float specularLight = specularStrength * specularValue;
 
-    vec3 finalColor = (ambientLight + diffusedLight + specularLight) * u_lightColor * u_objectColor;
+    vec3 finalColor = (ambientLight + diffusedLight + specularLight) * u_lightColor * out_instanceColor;
 
     out_color = vec4(finalColor, 1.0);
 };

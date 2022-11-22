@@ -10,6 +10,7 @@ public:
 	glm::vec3 position;
 	glm::vec3 velocity;
 	glm::vec3 forceBuffer;
+	glm::vec3 color;
 
 	float viewRadius;
 

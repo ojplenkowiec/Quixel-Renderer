@@ -20,13 +20,15 @@ public:
 	void TranslateUp(float distance);
 	void Translate(glm::vec3 translationVector);
 
+	void FocusOn(glm::vec3 position);
+
 	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetViewMatrix();
 
 	inline glm::vec3 GetPosition() { return c_PositionVector; }
-private:
 	glm::vec3 c_PositionVector;
 	glm::vec3 c_DirectionVector;
+private:
 	glm::vec3 c_UpVector;
 	glm::vec3 c_RightVector;
 

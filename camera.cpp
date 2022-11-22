@@ -74,6 +74,11 @@ void Camera::Translate(glm::vec3 translationVector)
 	c_PositionVector += translationVector;
 }
 
+void Camera::FocusOn(glm::vec3 position)
+{
+	c_PositionVector = position;
+}
+
 
 
 glm::mat4 Camera::GetProjectionMatrix()

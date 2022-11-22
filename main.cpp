@@ -86,7 +86,6 @@ void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
 			boids[i]->AddForce((averageVelocities / static_cast<float>(numberInInteractionRadius) - boids[i]->velocity) * 2.0f);
 			boids[i]->AddForce((averagePositions / static_cast<float>(numberInInteractionRadius) - boids[i]->position) * 1.0f);
 		}
-		boids[i]->Move(g_DELTA_TIME);
 		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
 			boids[i]->velocity *= 10.0f / glm::length(boids[i]->velocity);
 		}
@@ -95,8 +94,10 @@ void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
 			boids[i]->velocity.y += irand(-1000, 1000) / 100.0f;
 			boids[i]->velocity.z += irand(-1000, 1000) / 100.0f;
 		}
+		boids[i]->Move(g_DELTA_TIME);
 		i++;
 	}
+
 	delete(boidsInRange); // cleanup heap
 }
 
@@ -221,9 +222,10 @@ int main() {
 		boids[i] = new Boid(glm::vec3(x / 100.0f, y / 100.0f, z / 100.0f), 30.0f);
 	}
 
-	glm::vec3* boidPositions = new glm::vec3[numberOfBoids]; // DELETE BOID POSITIONS ARRAY
+	glm::vec3* boidPositions = new glm::vec3[numberOfBoids * 2]; // DELETE BOID POSITIONS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		boidPositions[i] = boids[i]->position;
+		boidPositions[2 * i] = boids[i]->position;
+		boidPositions[2 * i + 1] = boids[i]->color;
 	}
 	/* Buffer Creation -------------------------------*/
 
@@ -237,8 +239,9 @@ int main() {
 	longCubeVBL.Push<float>(3);
 	longCubeVBL.Push<float>(3);
 
-	VertexBuffer cubeInstancesVB = VertexBuffer(&boidPositions[0], numberOfBoids * sizeof(glm::vec3), numberOfBoids);
+	VertexBuffer cubeInstancesVB = VertexBuffer(&boidPositions[0], numberOfBoids * sizeof(glm::vec3) * 2, numberOfBoids);
 	VertexBufferLayout cubeInstancesVBL = VertexBufferLayout();
+	cubeInstancesVBL.Push<float>(3);
 	cubeInstancesVBL.Push<float>(3);
 	//cubeInstancesVBL.Push<float>(3);
 
@@ -288,6 +291,44 @@ int main() {
 
 		ComputeBoids(boids, numberOfBoids, octree);
 
+		for (unsigned int i = 0; i < numberOfBoids; i++) { // reset color
+			boids[i]->color = glm::vec3(1.0, 1.0, 1.0);
+		}
+
+		// abstract into raycast function!!
+		std::vector<void*>* rayBoids = new std::vector<void*>{};
+		float x = (2.0f * g_MOUSE_X) / mode->width - 1.0f;
+		float y = ((2.0f * g_MOUSE_Y) / mode->height - 1.0f) * -1.0f;
+		float z = 1.0f;
+		glm::vec3 rayNds = glm::vec3(x, y, z);
+		glm::vec4 rayClip = glm::vec4(rayNds.x, rayNds.y, -1.0f, -1.0f);
+		glm::vec4 rayEye = glm::inverse(renderer.r_camera.GetProjectionMatrix()) * rayClip;
+		rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
+		glm::vec4 rayWorldVec4 = (glm::inverse(renderer.r_camera.GetViewMatrix()) * rayEye);
+		glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z));
+	;
+		octree->QueryRay(renderer.r_camera.c_PositionVector, rayWorld * 1000000.0f, rayBoids);
+
+		if (rayBoids->size() > 0) {
+			unsigned int shortestIndex = 0;
+			float shortestDistance = 100000.0f;
+			for (int k = 0; k < rayBoids->size(); k++) {
+				float currentDistance = glm::length(glm::cross(static_cast<Boid*>(rayBoids->at(k))->position - renderer.r_camera.c_PositionVector, rayWorld * 1000000.0f - renderer.r_camera.c_PositionVector)) / glm::length(rayWorld * 1000000.0f - renderer.r_camera.c_PositionVector);
+				if (currentDistance < shortestDistance) {
+					shortestIndex = k;
+					shortestDistance = currentDistance;
+				}
+			}
+			if (shortestDistance < 3.0f) {
+				static_cast<Boid*>(rayBoids->at(shortestIndex))->color = glm::vec3(1.0f, 0.0f, 0.0f);
+				if (INPUT_STATE >= LEFT_MOUSE_BUTTON) { // if clicked!
+					renderer.r_camera.FocusOn(static_cast<Boid*>(rayBoids->at(shortestIndex))->position);
+				}
+			}
+		}
+		delete rayBoids;
+		
+
 		if (gridOn) {
 			VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
 			VertexBufferLayout octreeVBL = VertexBufferLayout();
@@ -297,9 +338,10 @@ int main() {
 		}
 
 		for (unsigned int i = 0; i < numberOfBoids; i++) {
-			boidPositions[i] = boids[i]->position;
+			boidPositions[2 * i] = boids[i]->position;
+			boidPositions[2 * i + 1] = boids[i]->color;
 		}
-		cubeInstancesVB.SubData(&boidPositions[0], numberOfBoids * sizeof(glm::vec3));
+		cubeInstancesVB.SubData(&boidPositions[0], numberOfBoids * sizeof(glm::vec3) * 2);
 
 		renderer.DrawInstancedArrays(instancedLongCubeVAO, instancedNormalShader);
 
