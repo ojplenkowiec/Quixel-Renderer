@@ -291,12 +291,17 @@ int main() {
 
 		ComputeBoids(boids, numberOfBoids, octree);
 
-		/*for (unsigned int i = 0; i < numberOfBoids; i++) { // reset color
-			boids[i]->color = glm::vec3(1.0, 1.0, 1.0);
-		}*/
+		for (unsigned int i = 0; i < numberOfBoids; i++) { // reset color
+			if (boids[i]->color != glm::vec3(1.0, 1.0, 1.0)) {
+				boids[i]->color += glm::vec3(0.01, 0.01, 0.01);
+				if (boids[i]->color.x > 1.0 && boids[i]->color.y > 1.0 && boids[i]->color.z > 1.0) {
+					boids[i]->color = glm::vec3(1.0, 1.0, 1.0);
+				}
+			}
+		}
 
 		if (INPUT_STATE >= LEFT_MOUSE_BUTTON) {
-			INPUT_STATE -= LEFT_MOUSE_BUTTON;
+			//INPUT_STATE -= LEFT_MOUSE_BUTTON;
 
 			float x = (2.0f * g_MOUSE_X) / mode->width - 1.0f;
 			float y = ((2.0f * g_MOUSE_Y) / mode->height - 1.0f) * -1.0f;
@@ -308,10 +313,10 @@ int main() {
 			glm::vec4 rayWorldVec4 = (glm::inverse(renderer.r_camera.GetViewMatrix()) * rayEye);
 			glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z)); // calculate ray
 
-			Boid* closestCollision = static_cast<Boid*>(octree->RayCast(renderer.r_camera.c_PositionVector, rayWorld * 200000.0f, 2.0f));
+			Boid* closestCollision = static_cast<Boid*>(octree->RayCast(renderer.r_camera.c_PositionVector, rayWorld * 100000.0f, 3.0f));
 
 			if (closestCollision != nullptr) {
-				closestCollision->color = glm::vec3(irand(0, 1000) / 1000.0f, irand(0, 1000) / 1000.0f, irand(0, 1000) / 1000.0f);
+				closestCollision->color = glm::vec3(1.0, 0.0, 0.0);
 			}
 		}
 
