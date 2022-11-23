@@ -105,6 +105,7 @@
     <None Include="basic.shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GojoTexture256x256.png">

@@ -195,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader" />
+    <None Include="ClassDiagram.cd" />
     <None Include="normal.shader" />
     <None Include="instanced_normal.shader" />
   </ItemGroup>

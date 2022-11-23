@@ -291,43 +291,29 @@ int main() {
 
 		ComputeBoids(boids, numberOfBoids, octree);
 
-		for (unsigned int i = 0; i < numberOfBoids; i++) { // reset color
+		/*for (unsigned int i = 0; i < numberOfBoids; i++) { // reset color
 			boids[i]->color = glm::vec3(1.0, 1.0, 1.0);
-		}
+		}*/
 
-		// abstract into raycast function!!
-		std::vector<void*>* rayBoids = new std::vector<void*>{};
-		float x = (2.0f * g_MOUSE_X) / mode->width - 1.0f;
-		float y = ((2.0f * g_MOUSE_Y) / mode->height - 1.0f) * -1.0f;
-		float z = 1.0f;
-		glm::vec3 rayNds = glm::vec3(x, y, z);
-		glm::vec4 rayClip = glm::vec4(rayNds.x, rayNds.y, -1.0f, -1.0f);
-		glm::vec4 rayEye = glm::inverse(renderer.r_camera.GetProjectionMatrix()) * rayClip;
-		rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
-		glm::vec4 rayWorldVec4 = (glm::inverse(renderer.r_camera.GetViewMatrix()) * rayEye);
-		glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z));
-	;
-		octree->QueryRay(renderer.r_camera.c_PositionVector, rayWorld * 1000000.0f, rayBoids);
+		if (INPUT_STATE >= LEFT_MOUSE_BUTTON) {
+			INPUT_STATE -= LEFT_MOUSE_BUTTON;
 
-		if (rayBoids->size() > 0) {
-			unsigned int shortestIndex = 0;
-			float shortestDistance = 100000.0f;
-			for (int k = 0; k < rayBoids->size(); k++) {
-				float currentDistance = glm::length(glm::cross(static_cast<Boid*>(rayBoids->at(k))->position - renderer.r_camera.c_PositionVector, rayWorld * 1000000.0f - renderer.r_camera.c_PositionVector)) / glm::length(rayWorld * 1000000.0f - renderer.r_camera.c_PositionVector);
-				if (currentDistance < shortestDistance) {
-					shortestIndex = k;
-					shortestDistance = currentDistance;
-				}
-			}
-			if (shortestDistance < 3.0f) {
-				static_cast<Boid*>(rayBoids->at(shortestIndex))->color = glm::vec3(1.0f, 0.0f, 0.0f);
-				if (INPUT_STATE >= LEFT_MOUSE_BUTTON) { // if clicked!
-					renderer.r_camera.FocusOn(static_cast<Boid*>(rayBoids->at(shortestIndex))->position);
-				}
+			float x = (2.0f * g_MOUSE_X) / mode->width - 1.0f;
+			float y = ((2.0f * g_MOUSE_Y) / mode->height - 1.0f) * -1.0f;
+			float z = 1.0f;
+			glm::vec3 rayNds = glm::vec3(x, y, z);
+			glm::vec4 rayClip = glm::vec4(rayNds.x, rayNds.y, -1.0f, -1.0f);
+			glm::vec4 rayEye = glm::inverse(renderer.r_camera.GetProjectionMatrix()) * rayClip;
+			rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
+			glm::vec4 rayWorldVec4 = (glm::inverse(renderer.r_camera.GetViewMatrix()) * rayEye);
+			glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z)); // calculate ray
+
+			Boid* closestCollision = static_cast<Boid*>(octree->RayCast(renderer.r_camera.c_PositionVector, rayWorld * 200000.0f, 2.0f));
+
+			if (closestCollision != nullptr) {
+				closestCollision->color = glm::vec3(irand(0, 1000) / 1000.0f, irand(0, 1000) / 1000.0f, irand(0, 1000) / 1000.0f);
 			}
 		}
-		delete rayBoids;
-		
 
 		if (gridOn) {
 			VertexBuffer octreeVB = VertexBuffer(octreeLinesData.data(), octreeLinesData.size() * sizeof(glm::vec3), octreeLinesData.size());
