@@ -29,8 +29,8 @@ int irand(int min, int max) {
 }
 
 void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
-	float avoianceRadiusSquared = 200.0f;
-	float avoidanceStrength = 40.0f;
+	float avoianceRadiusSquared = 300.0f;
+	float avoidanceStrength = 80.0f;
 
 	unsigned int i{};
 	unsigned int j{}; // increments for speed
@@ -47,9 +47,9 @@ void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
 	std::vector<void*>* boidsInRange = new std::vector<void*>{};
 
 	while (i < numBoids) { // for each boid
-		boids[i]->forceBuffer.x += irand(-1000, 1000) / 100.0f;
-		boids[i]->forceBuffer.y += irand(-1000, 1000) / 100.0f;
-		boids[i]->forceBuffer.z += irand(-1000, 1000) / 100.0f;
+		boids[i]->forceBuffer.x += irand(-1000, 1000) / 1000.0f;
+		boids[i]->forceBuffer.y += irand(-1000, 1000) / 1000.0f;
+		boids[i]->forceBuffer.z += irand(-1000, 1000) / 1000.0f;
 
 		boidsInRange->clear();
 		octree->QueryCuboid(boids[i]->position - glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boids[i]->position + glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boidsInRange);
@@ -87,7 +87,7 @@ void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
 			boids[i]->AddForce((averagePositions / static_cast<float>(numberInInteractionRadius) - boids[i]->position) * 1.0f);
 		}
 		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
-			boids[i]->velocity *= 10.0f / glm::length(boids[i]->velocity);
+			boids[i]->velocity *= 25.0f / glm::length(boids[i]->velocity);
 		}
 		else {
 			boids[i]->velocity.x += irand(-1000, 1000) / 100.0f;
@@ -213,13 +213,13 @@ int main() {
 		-0.75f,  0.75f, -0.75f,  0.0f,  1.0f,  0.0f
 	};
 
-	const unsigned int numberOfBoids = 5000;
+	const unsigned int numberOfBoids = 10000;
 	Boid** boids = new Boid*[numberOfBoids]; // DELETE BOIDS AND BOIDS ARRAY
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		float x = irand(-30000, 30000);
-		float y = irand(-30000, 30000);
-		float z = irand(-30000, 30000);
-		boids[i] = new Boid(glm::vec3(x / 100.0f, y / 100.0f, z / 100.0f), 30.0f);
+		float x = irand(-10000, 10000);
+		float y = irand(-10000, 10000);
+		float z = irand(-10000, 10000);
+		boids[i] = new Boid(glm::vec3(x / 50.0f, y / 50.0f, z / 50.0f), 30.0f);
 	}
 
 	glm::vec3* boidPositions = new glm::vec3[numberOfBoids * 2]; // DELETE BOID POSITIONS ARRAY
@@ -301,8 +301,6 @@ int main() {
 		}
 
 		if (INPUT_STATE >= LEFT_MOUSE_BUTTON) {
-			//INPUT_STATE -= LEFT_MOUSE_BUTTON;
-
 			float x = (2.0f * g_MOUSE_X) / mode->width - 1.0f;
 			float y = ((2.0f * g_MOUSE_Y) / mode->height - 1.0f) * -1.0f;
 			float z = 1.0f;
@@ -313,11 +311,23 @@ int main() {
 			glm::vec4 rayWorldVec4 = (glm::inverse(renderer.r_camera.GetViewMatrix()) * rayEye);
 			glm::vec3 rayWorld = glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z)); // calculate ray
 
-			Boid* closestCollision = static_cast<Boid*>(octree->RayCast(renderer.r_camera.c_PositionVector, rayWorld * 100000.0f, 3.0f));
+			octreeLinesData.push_back(renderer.r_camera.c_PositionVector + renderer.r_camera.c_DirectionVector * 0.1f);
+			octreeLinesData.push_back(rayWorld * 1000000.0f);
 
-			if (closestCollision != nullptr) {
-				closestCollision->color = glm::vec3(1.0, 0.0, 0.0);
+			if (INPUT_STATE >= E_KEY) {
+				std::vector<void*> collisionsInRange = octree->RayCastRange(renderer.r_camera.c_PositionVector, rayWorld * 500000.0f, 20.0f);
+				for (int i = 0; i < collisionsInRange.size(); i++) {
+					static_cast<Boid*>(collisionsInRange[i])->color = glm::vec3(0.0, 1.0, 0.0);
+				}
 			}
+			else {
+				Boid* closestCollision = static_cast<Boid*>(octree->RayCastClosest(renderer.r_camera.c_PositionVector, rayWorld * 500000.0f, 3.0f));
+
+				if (closestCollision != nullptr) {
+					closestCollision->color = glm::vec3(0.0, 1.0, 0.0);
+				}
+			}
+
 		}
 
 		if (gridOn) {
@@ -326,6 +336,15 @@ int main() {
 			octreeVBL.Push<float>(3);
 			VertexArray octreeVAO = VertexArray(octreeVB, octreeVBL);
 			renderer.DrawLines(octreeVAO, basicShader);
+		}
+		else {
+			if (INPUT_STATE >= LEFT_MOUSE_BUTTON) {
+				VertexBuffer octreeVB = VertexBuffer(&octreeLinesData.at(octreeLinesData.size() - 2)[0], 2 * sizeof(glm::vec3), 2);
+				VertexBufferLayout octreeVBL = VertexBufferLayout();
+				octreeVBL.Push<float>(3);
+				VertexArray octreeVAO = VertexArray(octreeVB, octreeVBL);
+				renderer.DrawLines(octreeVAO, basicShader);
+			}
 		}
 
 		for (unsigned int i = 0; i < numberOfBoids; i++) {
@@ -400,6 +419,13 @@ int main() {
 		}
 		else {
 			gridOn = false;
+		}
+
+		if (INPUT_STATE >= ENTER_KEY) {
+			for (int i = 0; i < numberOfBoids; i++) {
+				boids[i]->position = glm::vec3(irand(-10000, 10000) / 50.0f, irand(-10000, 10000) / 50.0f, irand(-10000, 10000) / 50.0f);
+				boids[i]->velocity = glm::vec3(0.0f);
+			}
 		}
 
 		/* Mouse updates ----------------------------------------------*/ //INPUTS CLASS FOR RESETTING GLOBAL VARIABLES ETC NEEDED//

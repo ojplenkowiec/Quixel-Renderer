@@ -41,10 +41,10 @@ uniform vec3 u_objectColor = vec3(0.2, 0.98, 0.78);
 
 void main()
 {
-    float ambientStrength = 0.7;
+    float ambientStrength = 0.9;
     float ambientLight = ambientStrength;
 
-    float diffusionStrength = 0.3;
+    float diffusionStrength = 0.6;
     vec3 lightDir = normalize(u_lightPos - out_fragPos);
     float diffusionValue = max(dot(out_normal, lightDir), 0.0);
     float diffusedLight = diffusionStrength * diffusionValue;

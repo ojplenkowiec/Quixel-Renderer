@@ -198,6 +198,7 @@
     <None Include="ClassDiagram.cd" />
     <None Include="normal.shader" />
     <None Include="instanced_normal.shader" />
+    <None Include="Rendering Pipeline.drawio.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GojoTexture256x256.png" />

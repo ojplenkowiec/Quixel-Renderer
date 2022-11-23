@@ -106,6 +106,7 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="Rendering Pipeline.drawio.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GojoTexture256x256.png">
