@@ -9,16 +9,17 @@
 #include "indexbuffer.h"
 #include "shader.h"
 #include "camera.h"
+#include "window.h"
 
 class Renderer // Debate over static or singleton?
 {
+private:
+    Window* m_TargetWindowPtr;
+
 public:
-    Camera r_camera;
+    Camera m_Camera;
 
-    float r_aspectRatio;
-
-    Renderer(int vSync, float aspectRatio);
-    ~Renderer();
+    Renderer(Window* targetWindow, int vSync);
 
     void Clear() const;
     void Draw(const VertexArray& va, const IndexBuffer& ib, Shader& shader);

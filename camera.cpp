@@ -2,38 +2,44 @@
 
 Camera::Camera(float screenAspectRatio, float fov, float nearDistance, float farDistance)
 {
-	c_PositionVector = glm::vec3(0.0f, 150.0f, 0.0f);
+	m_PositionVector = glm::vec3(0.0f, 150.0f, 0.0f);
 
-	c_DirectionVector = glm::vec3(0.0f, 0.0f, -1.0f);
-	c_UpVector = glm::vec3(0.0f, 1.0f, 0.0f); // default values! make modifiable?
-	c_RightVector = glm::vec3(1.0f, 0.0f, 0.0f);
+	m_ForwardsVector = glm::vec3(0.0f, 0.0f, -1.0f);
+	m_UpVector = glm::vec3(0.0f, 1.0f, 0.0f); // default values! make modifiable?
+	m_RightVector = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	c_Pitch = 0.0f;
 	c_Yaw = -90.0f;
 
-	c_Fov = 65.0f;
-	c_AspectRatio = screenAspectRatio;
-	c_Near = nearDistance;
-	c_Far = farDistance;
+	m_FieldOfView = 65.0f;
+	m_AspectRatio = screenAspectRatio;
+	m_NearClipDistance = nearDistance;
+	m_FarClipDistance = farDistance;
 
 	UpdateDirectionVectors(); // might not be necessary but ah well...
+
+	m_ProjectionMatrixNeedsUpdate = true;
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 
 
 void Camera::MoveForwards(float distance)
 {
-	c_PositionVector += c_DirectionVector * distance;
+	m_PositionVector += m_ForwardsVector * distance;
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::MoveRight(float distance)
 {
-	c_PositionVector += c_RightVector * distance;
+	m_PositionVector += m_RightVector * distance;
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::MoveUp(float distance)
 {
-	c_PositionVector += c_UpVector * distance;
+	m_PositionVector += m_UpVector * distance;
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::Rotate(float addedPitch, float addedYaw)
@@ -41,7 +47,6 @@ void Camera::Rotate(float addedPitch, float addedYaw)
 	c_Pitch += addedPitch;
 	c_Yaw += addedYaw;
 
-	// LIMIT UP/DOWN
 	if (c_Pitch > 89.0f) {
 		c_Pitch = 89.0f;
 	}
@@ -49,63 +54,106 @@ void Camera::Rotate(float addedPitch, float addedYaw)
 		c_Pitch = -89.0f;
 	}
 
-	UpdateDirectionVectors();
+	UpdateDirectionVectors(); // maybe also make into a status for update?
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 
 
 void Camera::TranslateForwards(float distance)
 {
-	c_PositionVector += glm::vec3(0.0f, 0.0f, distance);
+	m_PositionVector += glm::vec3(0.0f, 0.0f, distance);
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::TranslateRight(float distance)
 {
-	c_PositionVector += glm::vec3(distance, 0.0f, 0.0f);
+	m_PositionVector += glm::vec3(distance, 0.0f, 0.0f);
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::TranslateUp(float distance)
 {
-	c_PositionVector += glm::vec3(0.0f, distance, 0.0f);
+	m_PositionVector += glm::vec3(0.0f, distance, 0.0f);
+	m_ViewMatrixNeedsUpdate = true;
 }
 
 void Camera::Translate(glm::vec3 translationVector)
 {
-	c_PositionVector += translationVector;
+	m_PositionVector += translationVector;
+	m_ViewMatrixNeedsUpdate = true;
 }
 
-void Camera::FocusOn(glm::vec3 position)
+
+
+void Camera::FocusOn(glm::vec3 position) // update this
 {
-	c_PositionVector = position;
+	m_PositionVector = position;
+	m_ViewMatrixNeedsUpdate = true;
+}
+
+
+
+glm::vec3 Camera::GetRay(float mouse_x, float mouse_y, float windowWidth, float windowHeight)
+{
+	float x = (2.0f * mouse_x) / windowWidth - 1.0f;
+	float y = ((2.0f * mouse_y) / windowHeight - 1.0f) * -1.0f;
+	float z = 1.0f;
+	glm::vec3 rayNds = glm::vec3(x, y, z);
+	glm::vec4 rayClip = glm::vec4(rayNds.x, rayNds.y, -1.0f, -1.0f);
+	glm::vec4 rayEye = glm::inverse(GetProjectionMatrix()) * rayClip;
+	rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
+	glm::vec4 rayWorldVec4 = (glm::inverse(GetViewMatrix()) * rayEye);
+	return glm::normalize(glm::vec3(rayWorldVec4.x, rayWorldVec4.y, rayWorldVec4.z)) * 500000.0f;
+}
+
+
+
+void Camera::UpdateDirectionVectors()
+{
+	m_ForwardsVector.x = cos(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch));
+	m_ForwardsVector.y = sin(glm::radians(c_Pitch));
+	m_ForwardsVector.z = sin(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch));
+
+	m_ForwardsVector = glm::normalize(m_ForwardsVector);
+
+	m_UpVector.x = cos(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch + 90.0f));
+	m_UpVector.y = sin(glm::radians(c_Pitch + 90.0f));
+	m_UpVector.z = sin(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch + 90.0f));
+
+	m_UpVector = glm::normalize(m_UpVector);
+
+	m_RightVector = glm::cross(m_ForwardsVector, m_UpVector);
+
+	m_RightVector = glm::normalize(m_RightVector);
+}
+
+void Camera::UpdateViewMatrix()
+{
+	m_ViewMatrix = glm::lookAt(m_PositionVector, m_PositionVector + m_ForwardsVector, m_UpVector);
+}
+
+void Camera::UpdateProjectionMatrix()
+{
+	m_ProjectionMatrix = glm::perspective(glm::radians(m_FieldOfView), m_AspectRatio, m_NearClipDistance, m_FarClipDistance);
 }
 
 
 
 glm::mat4 Camera::GetProjectionMatrix()
 {
-	return (glm::perspective(glm::radians(c_Fov), c_AspectRatio, c_Near, c_Far));
+	if (m_ProjectionMatrixNeedsUpdate) {
+		UpdateProjectionMatrix();
+		m_ProjectionMatrixNeedsUpdate = false;
+	}
+	return m_ProjectionMatrix;
 }
 
 glm::mat4 Camera::GetViewMatrix()
 {
-	return (glm::lookAt(c_PositionVector, c_PositionVector + c_DirectionVector, c_UpVector));
-}
-
-void Camera::UpdateDirectionVectors()
-{
-	c_DirectionVector.x = cos(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch));
-	c_DirectionVector.y = sin(glm::radians(c_Pitch));
-	c_DirectionVector.z = sin(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch));
-
-	c_DirectionVector = glm::normalize(c_DirectionVector);
-
-	c_UpVector.x = cos(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch + 90.0f));
-	c_UpVector.y = sin(glm::radians(c_Pitch + 90.0f));
-	c_UpVector.z = sin(glm::radians(c_Yaw)) * cos(glm::radians(c_Pitch + 90.0f));
-
-	c_UpVector = glm::normalize(c_UpVector);
-
-	c_RightVector = glm::cross(c_DirectionVector, c_UpVector);
-
-	c_RightVector = glm::normalize(c_RightVector);
+	if (m_ViewMatrixNeedsUpdate) {
+		UpdateViewMatrix();
+		m_ViewMatrixNeedsUpdate = false;
+	}
+	return m_ViewMatrix;
 }
