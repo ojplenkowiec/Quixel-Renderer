@@ -7,7 +7,7 @@
 #include "callbacks.h"
 #include "inputstate.h"
 #include "window.h"
-#include "engine.h"
+#include "quixel2d.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 #include "vertexarray.h"
@@ -23,29 +23,21 @@
 #include <random>
 
 int main() {
-	// glfwSetErrorCallback(glfwErrorCallback);
-	// glfwSetWindowCloseCallback(gameWindow.GetID(), glfwWindowCloseCallback);
-	// glfwSetKeyCallback(gameWindow.GetID(), glfwKeyCallback);
-	// glfwSetMouseButtonCallback(gameWindow.GetID(), glfwMouseButtonCallback);
-	// glfwSetCursorPosCallback(gameWindow.GetID(), glfwMousePositionCallback);
+	Quixel2D engine = Quixel2D(1920, 1080, "Quixel Demo");
+	engine.SetClearColorHex(0, 0, 0, 255);
 
-	/* Buffer Creation -------------------------------*/
+	int i = 0;
+	while (!engine.ShouldClose()) { // main loop
+		float r = (i % 255) / 255.0f;
+		float g = ((i + 255 / 3) % 255) / 255.0f;
+		float b = (((i + 255 / 3) * 2) % 255) / 255.0f;
 
-	/* VAO Creation ----------------------------------*/
-
-	/* Shader Creation --------------------------*/
-
-	/* Renderer instantiation --------------------------*/
-
-	Engine engine = Engine(800, 600, "QUACK!");
-	engine.SetClearColorHex(150, 150, 150, 255);
-
-	while (!engine.ShouldClose()) {
-		engine.Clear();
-
-		// render stuff here
-
+		for (int j = 0; j < 100; j++) {
+			engine.FillRect(0.0f, 0.0f, 200.0f, 267.0f, glm::vec4(r, g, b, 1.0f));
+		}
 		engine.Update();
+		i++;
 	}
+
 	engine.Terminate();
 }

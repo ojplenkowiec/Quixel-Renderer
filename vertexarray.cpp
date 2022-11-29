@@ -28,7 +28,6 @@ VertexArray::~VertexArray()
 
 void VertexArray::AddVertexBuffer(const VertexBuffer& vertexBuffer, const VertexBufferLayout& vertexLayout)
 {
-	m_VertexCount = vertexBuffer.GetVertexCount();
 	Bind();
 	vertexBuffer.Bind();
 	const auto& elements = vertexLayout.GetElements();
@@ -48,7 +47,6 @@ void VertexArray::AddVertexBuffer(const VertexBuffer& vertexBuffer, const Vertex
 
 void VertexArray::AddInstanceVertexBuffer(const VertexBuffer& instanceVertexBuffer, const VertexBufferLayout& instanceVertexLayout)
 {
-	m_InstanceCount = instanceVertexBuffer.GetVertexCount();
 	Bind();
 	instanceVertexBuffer.Bind();
 	const auto& elements = instanceVertexLayout.GetElements();
