@@ -38,6 +38,7 @@ uniform vec3 u_lightPos = vec3(100000.0, 100000.0, 30000.0);
 uniform vec3 u_lightColor = vec3(1.0, 1.0, 1.0);
 uniform vec3 u_viewPos;
 uniform vec3 u_objectColor = vec3(0.2, 0.98, 0.78);
+uniform sampler2D u_texture;
 
 void main()
 {
@@ -55,7 +56,9 @@ void main()
     float specularValue = pow(max(dot(viewDir, reflectDir), 0.0), 2);
     float specularLight = specularStrength * specularValue;
 
-    vec3 finalColor = (ambientLight + diffusedLight + specularLight) * u_lightColor * out_instanceColor;
+    vec3 texColor = texture(u_texture, vec2(gl_FragCoord.xy / 500.0)).xyz;
+
+    vec3 finalColor = (ambientLight + diffusedLight + specularLight) * u_lightColor * out_instanceColor * texColor;
 
     out_color = vec4(finalColor, 1.0);
 };

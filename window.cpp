@@ -40,3 +40,8 @@ void Window::RequestClose()
 {
 	glfwSetWindowShouldClose(m_WindowID, true);
 }
+
+void Window::Destroy()
+{
+	glfwDestroyWindow(m_WindowID);
+}

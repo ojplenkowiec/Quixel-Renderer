@@ -18,6 +18,7 @@ public:
 	void SwapBuffers();
 	bool ShouldClose();
 	void RequestClose();
+	void Destroy();
 
 	inline GLFWwindow* GetID() const { return m_WindowID; }
 	inline unsigned int GetWidth() { return m_Width; }
