@@ -10,6 +10,7 @@ private:
 	GLFWwindow* m_WindowID;
 	unsigned int m_Width;
 	unsigned int m_Height;
+	bool m_Resizable;
 public:	
 	Window(unsigned int windowWidth, unsigned int windowHeight, const char* windowName, bool resizable, bool floating);
 	~Window();

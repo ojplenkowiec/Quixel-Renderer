@@ -87,11 +87,11 @@ Octree::~Octree()
 	}
 }
 
-void Octree::PushData(glm::vec3* position, void* dataPointer)
+void Octree::PushData(glm::vec3 position, void* dataPointer)
 {
-	if (position->x >= midPoint.x) {
-		if (position->y >= midPoint.y) {
-			if (position->z >= midPoint.z) { // +x +y +z [6]
+	if (position.x >= midPoint.x) {
+		if (position.y >= midPoint.y) {
+			if (position.z >= midPoint.z) { // +x +y +z [6]
 				if (branchState & 0b00000010) {
 					static_cast<Octree*>(storedData[6])->PushData(position, dataPointer);
 				}
@@ -131,7 +131,7 @@ void Octree::PushData(glm::vec3* position, void* dataPointer)
 			}
 		}
 		else {
-			if (position->z >= midPoint.z) { // +x -y +z [2]
+			if (position.z >= midPoint.z) { // +x -y +z [2]
 				if (branchState & 0b00100000) {
 					static_cast<Octree*>(storedData[2])->PushData(position, dataPointer);
 				}
@@ -172,8 +172,8 @@ void Octree::PushData(glm::vec3* position, void* dataPointer)
 		}
 	}
 	else {
-		if (position->y >= midPoint.y) {
-			if (position->z >= midPoint.z) { // -x +y +z [7]
+		if (position.y >= midPoint.y) {
+			if (position.z >= midPoint.z) { // -x +y +z [7]
 				if (branchState & 0b00000001) {
 					static_cast<Octree*>(storedData[7])->PushData(position, dataPointer);
 				}
@@ -213,7 +213,7 @@ void Octree::PushData(glm::vec3* position, void* dataPointer)
 			}
 		}
 		else {
-			if (position->z >= midPoint.z) { // -x -y +z [3]
+			if (position.z >= midPoint.z) { // -x -y +z [3]
 				if (branchState & 0b00010000) {
 					static_cast<Octree*>(storedData[3])->PushData(position, dataPointer);
 				}
@@ -257,9 +257,9 @@ void Octree::PushData(glm::vec3* position, void* dataPointer)
 
 void Octree::PushData(Node* node)
 {
-	if (node->position->x >= midPoint.x) {
-		if (node->position->y >= midPoint.y) {
-			if (node->position->z >= midPoint.z) { // +x +y +z [6]
+	if (node->position.x >= midPoint.x) {
+		if (node->position.y >= midPoint.y) {
+			if (node->position.z >= midPoint.z) { // +x +y +z [6]
 				if (branchState & 0b00000010) {
 					static_cast<Octree*>(storedData[6])->PushData(node);
 				}
@@ -299,7 +299,7 @@ void Octree::PushData(Node* node)
 			}
 		}
 		else {
-			if (node->position->z >= midPoint.z) { // +x -y +z [2]
+			if (node->position.z >= midPoint.z) { // +x -y +z [2]
 				if (branchState & 0b00100000) {
 					static_cast<Octree*>(storedData[2])->PushData(node);
 				}
@@ -340,8 +340,8 @@ void Octree::PushData(Node* node)
 		}
 	}
 	else {
-		if (node->position->y >= midPoint.y) {
-			if (node->position->z >= midPoint.z) { // -x +y +z [7]
+		if (node->position.y >= midPoint.y) {
+			if (node->position.z >= midPoint.z) { // -x +y +z [7]
 				if (branchState & 0b00000001) {
 					static_cast<Octree*>(storedData[7])->PushData(node);
 				}
@@ -381,7 +381,7 @@ void Octree::PushData(Node* node)
 			}
 		}
 		else {
-			if (node->position->z >= midPoint.z) { // -x -y +z [3]
+			if (node->position.z >= midPoint.z) { // -x -y +z [3]
 				if (branchState & 0b00010000) {
 					static_cast<Octree*>(storedData[3])->PushData(node);
 				}
@@ -2918,7 +2918,7 @@ void* Octree::RayCastClosest(glm::vec3 origin, glm::vec3 rayDirection, float max
 		int shortestIndex = -1;
 		float currentDistance = 0.0f;
 		for (int i = 0; i < rayCollisionNodes->size(); i++) {
-			currentDistance = glm::length(glm::cross(*((static_cast<Node*>(rayCollisionNodes->at(i)))->position) - origin, rayDirection - origin)) / glm::length(rayDirection - origin); // scaling helps with accuracy! BUT SHOULDNT BE DONE HERE
+			currentDistance = glm::length(glm::cross((static_cast<Node*>(rayCollisionNodes->at(i)))->position - origin, rayDirection - origin)) / glm::length(rayDirection - origin); // scaling helps with accuracy! BUT SHOULDNT BE DONE HERE
 			if (currentDistance < maxDistanceFromRay) {
 				shortestIndex = i;
 				maxDistanceFromRay = currentDistance; // updates maximum to make sure we only get the closest result in the range!
@@ -4102,7 +4102,7 @@ std::vector<void*> Octree::RayCastRange(glm::vec3 origin, glm::vec3 rayDirection
 	if (rayCollisionNodes->size() >= 0) {
 		float currentDistance = 0.0f;
 		for (int i = 0; i < rayCollisionNodes->size(); i++) {
-			currentDistance = glm::length(glm::cross(*((static_cast<Node*>(rayCollisionNodes->at(i)))->position) - origin, rayDirection - origin)) / glm::length(rayDirection - origin); // scaling helps with accuracy! BUT SHOULDNT BE DONE HERE
+			currentDistance = glm::length(glm::cross((static_cast<Node*>(rayCollisionNodes->at(i)))->position - origin, rayDirection - origin)) / glm::length(rayDirection - origin); // scaling helps with accuracy! BUT SHOULDNT BE DONE HERE
 			if (currentDistance < maxDistanceFromRay) {
 				returnVals.push_back((static_cast<Node*>(rayCollisionNodes->at(i)))->dataPointer);
 			}

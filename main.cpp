@@ -29,7 +29,7 @@
 #include <random>
 
 int main() {
-	const unsigned int numberOfBoids = 10000;
+	const unsigned int numberOfBoids = 5000;
 
 	float mouseSensitivity = 0.15f;
 	float cameraSpeed = 500.0f;
@@ -58,15 +58,12 @@ int main() {
 
 	Boid** boids = new Boid*[numberOfBoids];
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		float x = RandomFloat(-10000, 10000);
-		float y = RandomFloat(-10000, 10000);
-		float z = RandomFloat(-10000, 10000);
-		boids[i] = new Boid(glm::vec3(x / 50.0f, y / 50.0f, z / 50.0f), 30.0f);
+		boids[i] = new Boid(RandomVec3(500.0f), glm::vec3(0.0f, 0.0f, 0.0f), 40.0f, 20.0f, 0.0f, 40.0f);
 	}
 
 	glm::vec3* boidPositions = new glm::vec3[numberOfBoids * 2];
 	for (unsigned int i = 0; i < numberOfBoids; i++) {
-		boidPositions[2 * i] = boids[i]->position;
+		boidPositions[2 * i] = boids[i]->GetPosition();
 		boidPositions[2 * i + 1] = boids[i]->color;
 	}
 
@@ -110,7 +107,7 @@ int main() {
 
 		Octree* octree = new Octree(glm::vec3(-10000.0f, -10000.0f, -10000.0f), glm::vec3(10000.0f, 10000.0f, 10000.0f), 16);
 		for (int i = 0; i < numberOfBoids; i++) {
-			octree->PushData(&boids[i]->position, boids[i]);
+			octree->PushData(boids[i]->GetPosition(), boids[i]);
 		}
 
 		std::vector<glm::vec3> octreeLinesData;
@@ -119,7 +116,7 @@ int main() {
 		ComputeBoids(boids, numberOfBoids, octree);
 
 		for (unsigned int i = 0; i < numberOfBoids; i++) {
-			boidPositions[2 * i] = boids[i]->position; // for sub buffer data
+			boidPositions[2 * i] = boids[i]->GetPosition(); // for sub buffer data
 			boidPositions[2 * i + 1] = boids[i]->color;
 
 			if (boids[i]->color != glm::vec3(1.0, 1.0, 1.0)) { // slowly reset color to white
@@ -233,8 +230,7 @@ int main() {
 		if (INPUT_STATE >= ENTER_KEY) { // reset boids
 			INPUT_STATE -= ENTER_KEY;
 			for (int i = 0; i < numberOfBoids; i++) {
-				boids[i]->position = glm::vec3(RandomFloat(-10000, 10000) / 50.0f, RandomFloat(-10000, 10000) / 50.0f, RandomFloat(-10000, 10000) / 50.0f);
-				boids[i]->velocity = glm::vec3(0.0f);
+				boids[i]->SetPosition(RandomVec3(500.0f));
 			}
 		}
 

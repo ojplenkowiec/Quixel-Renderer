@@ -13,6 +13,7 @@ Window::Window(unsigned int windowWidth, unsigned int windowHeight, const char* 
 	m_WindowID = glfwCreateWindow(windowWidth, windowHeight, windowName, nullptr, nullptr);
 	m_Width = windowWidth;
 	m_Height = windowHeight;
+	m_Resizable = resizable; // implement some kind of resize!
 }
 
 Window::~Window()

@@ -5,7 +5,7 @@
 #include <vector>
 
 struct Node {
-	glm::vec3* position;
+	glm::vec3 position;
 	void* dataPointer;
 };
 
@@ -28,7 +28,7 @@ public:
 	Octree(glm::vec3 minPointVector, glm::vec3 maxPointVector, uint8_t depthLimit);
 	~Octree();
 
-	void PushData(glm::vec3* position, void* dataPointer);
+	void PushData(glm::vec3 position, void* dataPointer);
 	void PushData(Node* node);
 	void GetVertices(std::vector<glm::vec3>* vectorPointer);
 

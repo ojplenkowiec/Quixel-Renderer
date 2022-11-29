@@ -16,10 +16,37 @@ Camera::Camera(float screenAspectRatio, float fov, float nearDistance, float far
 	m_NearClipDistance = nearDistance;
 	m_FarClipDistance = farDistance;
 
+	m_MaxFov = 132.0f;
+	m_MinFov = 5.0f;
+
 	UpdateDirectionVectors(); // might not be necessary but ah well...
 
 	m_ProjectionMatrixNeedsUpdate = true;
 	m_ViewMatrixNeedsUpdate = true;
+}
+
+void Camera::UpdateFov(float dFov)
+{
+	m_FieldOfView += dFov;
+	if (m_FieldOfView > m_MaxFov) {
+		m_FieldOfView = m_MaxFov;
+	}
+	else if (m_FieldOfView < m_MinFov) {
+		m_FieldOfView = m_MinFov;
+	}
+	m_ProjectionMatrixNeedsUpdate = true;
+}
+
+void Camera::SetFov(float fov)
+{
+	m_FieldOfView = fov;
+	if (m_FieldOfView > m_MaxFov) {
+		m_FieldOfView = m_MaxFov;
+	}
+	else if (m_FieldOfView < m_MinFov) {
+		m_FieldOfView = m_MinFov;
+	}
+	m_ProjectionMatrixNeedsUpdate = true;
 }
 
 

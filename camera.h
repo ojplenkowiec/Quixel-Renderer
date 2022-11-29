@@ -28,12 +28,18 @@ private:
 	float m_NearClipDistance;
 	float m_FarClipDistance;
 
+	float m_MaxFov;
+	float m_MinFov;
+
 	void UpdateDirectionVectors();
 
 	void UpdateViewMatrix();
 	void UpdateProjectionMatrix();
 public:
 	Camera(float aspectRatio, float fov, float nearDistance, float farDistance);
+
+	void UpdateFov(float dFov);
+	void SetFov(float fov);
 
 	void MoveForwards(float distance);
 	void MoveRight(float distance);
@@ -49,7 +55,7 @@ public:
 
 	void FocusOn(glm::vec3 position); // ACTUALLY FINISH THIS! maybe too abstract...
 
-	glm::vec3 GetRay(float mouse_x, float mouse_y, float windowWidth, float windowHeight); // idk about this at all its so weird... maybe should be created in scene?
+	glm::vec3 GetRay(float mouse_x, float mouse_y, float windowWidth, float windowHeight); // idk about this at all its so weird... maybe should be created in scenE by getting data?
 
 	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetViewMatrix();

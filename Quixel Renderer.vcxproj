@@ -106,7 +106,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,7 +153,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +169,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="indexbuffer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="octree.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="shader.cpp" />
@@ -186,13 +187,17 @@
     <ClInclude Include="boidbehavior.h" />
     <ClInclude Include="indexbuffer.h" />
     <ClInclude Include="inputstate.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="octree.h" />
     <ClInclude Include="prefabs.h" />
     <ClInclude Include="randomranges.h" />
     <ClInclude Include="raycast.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="vectorextras.h" />
     <ClInclude Include="vertexarray.h" />
     <ClInclude Include="vertexbuffer.h" />
     <ClInclude Include="vertexbufferlayout.h" />

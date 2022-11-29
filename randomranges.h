@@ -2,13 +2,18 @@
 #define RANDOMRANGES_H
 
 #include <random>
+#include "glm.hpp"
 
-int RandomInt(int min, int max) {
-	return ((float)rand() / ((float)RAND_MAX + 1.0)) * (max - min + 1) + min;
+static int RandomInt(int min, int max) {
+	return (rand() % (max - min)) + min;
 }
 
-float RandomFloat(float min, float max) {
-	return ((float)rand() / ((float)RAND_MAX + 1.0)) * (max - min + 1.0f) + min;
+static glm::vec3 RandomVec3(float maxMagnitude) {
+	glm::vec3 direction = glm::normalize(glm::vec3((float)RandomInt(-1000, 1000) + 0.001f, (float)RandomInt(-1000, 1000) + 0.001f, (float)RandomInt(-1000, 1000) + 0.001f));
+	float magnitude = (float)(RandomInt(0, 1000)) * (float)(maxMagnitude / 1000.0f);
+	direction *= magnitude;
+	//std::cout << direction.x << std::endl << direction.y << std::endl << direction.z << std::endl << std::endl;
+	return(direction);
 }
 
-#endif
+#endif 

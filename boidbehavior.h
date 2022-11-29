@@ -5,74 +5,56 @@
 #include "octree.h"
 #include "randomranges.h"
 #include "globals.h"
+#include "vectorextras.h"
 
-void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
-	float avoianceRadiusSquared = 300.0f;
+static void ComputeBoids(Boid** boids, unsigned int numBoids, Octree* octree) {
 	float avoidanceStrength = 80.0f;
-
-	unsigned int i{};
-	unsigned int j{}; // increments for speed
-
-	unsigned int numberInQueryRangeIncludingSelf{};
-	unsigned int numberInInteractionRadius{};
-
-	glm::vec3 averageVelocities{};
-	glm::vec3 averagePositions{};
-	glm::vec3 otherToSelfVector{};
-
-	float distanceSquared{};
-
-	std::vector<void*>* boidsInRange = new std::vector<void*>{};
-
+	float cohesionFactor = 1.0f;
+	float alignmentFactor = 1.0f;
+	
+	unsigned int i = 0;
+	unsigned int j = 0; // increments for speed
+	
+	unsigned int numberInQueryRangeIncludingSelf = 0;
+	unsigned int numberInInteractionRadius = 0;
+	
+	glm::vec3 averageVelocities(0.0f, 0.0f, 0.0f);
+	glm::vec3 averagePositions(0.0f, 0.0f, 0.0f);
+	glm::vec3 otherToSelfVector(0.0f, 0.0f, 0.0f);
+	
+	float distance = 0.0f;
+	
+	std::vector<void*>* boidsInRange = new std::vector<void*>();
+	
 	while (i < numBoids) { // for each boid
-		boids[i]->forceBuffer.x += RandomFloat(-1000, 1000) / 1000.0f;
-		boids[i]->forceBuffer.y += RandomFloat(-1000, 1000) / 1000.0f;
-		boids[i]->forceBuffer.z += RandomFloat(-1000, 1000) / 1000.0f;
-
 		boidsInRange->clear();
-		octree->QueryCuboid(boids[i]->position - glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boids[i]->position + glm::vec3(boids[i]->viewRadius, boids[i]->viewRadius, boids[i]->viewRadius), boidsInRange);
-
+		boids[i]->ApplyForce(RandomVec3(0.1f));
+		octree->QueryCuboid(boids[i]->GetPosition() - glm::vec3(boids[i]->GetViewRadius()), boids[i]->GetPosition() + glm::vec3(boids[i]->GetViewRadius()), boidsInRange);
 		numberInQueryRangeIncludingSelf = boidsInRange->size();
-
 		if (numberInQueryRangeIncludingSelf > 1) { // not just self
-			averageVelocities.x = 0.0f;
-			averageVelocities.y = 0.0f;
-			averageVelocities.z = 0.0f;
-
-			averagePositions.x = 0.0f;
-			averagePositions.y = 0.0f;
-			averagePositions.z = 0.0f;
-
+			ClearVector(&averageVelocities);
+			ClearVector(&averagePositions);
 			numberInInteractionRadius = 0;
-
 			j = 0;
 			while (j < numberInQueryRangeIncludingSelf) {
-				otherToSelfVector = boids[i]->position - (static_cast<Boid*>(boidsInRange->at(j))->position);
-				distanceSquared = (otherToSelfVector.x * otherToSelfVector.x) + (otherToSelfVector.y * otherToSelfVector.y) + (otherToSelfVector.z * otherToSelfVector.z);
-				if (distanceSquared != 0.0f) {
-					if (distanceSquared < boids[i]->viewRadius * boids[i]->viewRadius) {
+				otherToSelfVector = boids[i]->GetPosition() - (static_cast<Boid*>(boidsInRange->at(j))->GetPosition());
+				distance = GetLengthOfVector(&otherToSelfVector);
+				if (distance > 0.0f) {
+					if (distance < boids[i]->GetViewRadius()) {
 						numberInInteractionRadius++;
-						if (distanceSquared < avoianceRadiusSquared) {
-							boids[i]->AddForce((otherToSelfVector * avoidanceStrength) / distanceSquared);
+					    if (distance < boids[i]->GetAvoidanceRadius()) {
+							boids[i]->ApplyForce((glm::normalize(otherToSelfVector) * avoidanceStrength) / distance);
 						}
-						averageVelocities += static_cast<Boid*>(boidsInRange->at(j))->velocity;
-						averagePositions += static_cast<Boid*>(boidsInRange->at(j))->position;
+						averageVelocities += static_cast<Boid*>(boidsInRange->at(j))->GetVelocity();
+						averagePositions += static_cast<Boid*>(boidsInRange->at(j))->GetPosition();
 					}
 				}
 				j++;
 			}
-			boids[i]->AddForce((averageVelocities / static_cast<float>(numberInInteractionRadius) - boids[i]->velocity) * 2.0f);
-			boids[i]->AddForce((averagePositions / static_cast<float>(numberInInteractionRadius) - boids[i]->position) * 1.0f);
+			boids[i]->ApplyForce((averageVelocities / static_cast<float>(numberInInteractionRadius) - boids[i]->GetVelocity()) * alignmentFactor);
+			boids[i]->ApplyForce((averagePositions / static_cast<float>(numberInInteractionRadius) - boids[i]->GetPosition()) * cohesionFactor);
 		}
-		if (boids[i]->velocity.x || boids[i]->velocity.y || boids[i]->velocity.z) {
-			boids[i]->velocity *= 25.0f / glm::length(boids[i]->velocity);
-		}
-		else {
-			boids[i]->velocity.x += RandomFloat(-1000, 1000) / 100.0f;
-			boids[i]->velocity.y += RandomFloat(-1000, 1000) / 100.0f;
-			boids[i]->velocity.z += RandomFloat(-1000, 1000) / 100.0f;
-		}
-		boids[i]->Move(g_DELTA_TIME);
+		boids[i]->Update(g_DELTA_TIME);
 		i++;
 	}
 	delete(boidsInRange); // cleanup heap
