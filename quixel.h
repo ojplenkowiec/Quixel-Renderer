@@ -18,26 +18,46 @@ class Quixel // Debate over static or singleton?
 {
 private:
     Window* m_Window;
+
     Camera* m_Camera;
-    float m_TimeSinceLastBufferSwap;
-    float m_TimeOfLastBufferSwap;
-    void Clear() const;
+
+    double m_TimeSinceLastBufferSwap;
+    double m_TimeOfLastBufferSwap;
+
     Shader* m_TexShader;
-    Shader* m_BlockShader;
+    Shader* m_InstancedRGBAQuadShader;
+
+    VertexBuffer* m_BLQuadVB;
+    VertexBufferLayout* m_BLQuadVBL;
+
+    VertexArray* m_BLQuadInstanceVA;
+    IndexBuffer* m_BLQuadIB;
+
+    VertexBufferLayout* m_BLQuadInstanceDataVBL;
+
+    std::vector<glm::vec4>* m_QuadInstancesData;
+
+    void Clear() const;
+    void UpdateQuadInstanceArray();
+    void BindInstancedRGBAQuadShader();
 public:
     Quixel(uint32_t width, uint32_t height, const char* name);
     ~Quixel();
     void Update();
 
     void SetClearColor(Color clearColor);
+    void SetClearColor(Color* clearColor);
 
     bool ShouldClose();
-    void SetSync(uint32_t size);
-    inline float DeltaTime() { return m_TimeSinceLastBufferSwap; }
+
+    void SetVSync(uint32_t size);
+
+    inline double GetDeltaTime() { return m_TimeSinceLastBufferSwap; }
+    inline int GetFPS() { return (int)(1.0f / (float)m_TimeSinceLastBufferSwap); }
+
     void Terminate();
 
     void FillRect(float x, float y, float width, float height, Color fillColor);
-    void DrawPoint(float x, float y, Color pointColor);
 };
 
 #endif

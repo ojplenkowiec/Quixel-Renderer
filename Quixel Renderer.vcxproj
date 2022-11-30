@@ -107,7 +107,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,7 +154,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,6 +171,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="quixel.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shadermanager.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="vertexarray.cpp" />
     <ClCompile Include="vertexbuffer.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="inputstate.h" />
     <ClInclude Include="quixel.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shadermanager.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="vertexarray.h" />
     <ClInclude Include="vertexbuffer.h" />
@@ -193,7 +195,7 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bucket.shader" />
+    <None Include="InstancedAABBs.shader" />
     <None Include="tex.shader" />
   </ItemGroup>
   <ItemGroup>

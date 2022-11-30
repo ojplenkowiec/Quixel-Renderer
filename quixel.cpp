@@ -5,10 +5,6 @@ Quixel::Quixel(uint32_t width, uint32_t height, const char* name)
     if (glfwInit() != GLFW_TRUE) {
         throw std::runtime_error("Couldn't initialize GLFW!");
     }
-    glfwSwapInterval(1); // vsync enabled by default
-
-    m_TimeOfLastBufferSwap = 0.0f;
-    m_TimeSinceLastBufferSwap = glfwGetTime();
 
     m_Window = new Window(width, height, name, false, true);
     m_Window->MakeCurrentOpenGLContext();
@@ -20,13 +16,44 @@ Quixel::Quixel(uint32_t width, uint32_t height, const char* name)
     m_Camera = new Camera(width, height);
 
     m_TexShader = new Shader("tex.shader");
-    m_BlockShader = new Shader("bucket.shader");
+    m_InstancedRGBAQuadShader = new Shader("InstancedAABBs.shader");
 
     glfwSetErrorCallback(glfwErrorCallback);
+    glfwSwapInterval(1); // vsync enabled by default
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    m_QuadInstancesData = new std::vector<glm::vec4>();
+
+    float BLQuadVertices[] = {
+        1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+    unsigned int QuadIndexes[] = {
+        0, 1, 2,
+        3, 0, 2
+    };
+    m_BLQuadVB = new VertexBuffer(&BLQuadVertices[0], sizeof(float) * 3 * 4);
+    m_BLQuadVBL = new VertexBufferLayout();
+    m_BLQuadVBL->Push<float>(3);
+
+    m_BLQuadInstanceVA = new VertexArray(*m_BLQuadVB, *m_BLQuadVBL); // fix this deref
+    m_BLQuadIB = new IndexBuffer(&QuadIndexes[0], 6);
+
+    m_BLQuadInstanceDataVBL = new VertexBufferLayout();
+    m_BLQuadInstanceDataVBL->Push<float>(4);
+    m_BLQuadInstanceDataVBL->Push<float>(4);
+    m_BLQuadInstanceDataVBL->Push<float>(4);
+    m_BLQuadInstanceDataVBL->Push<float>(4);
+    m_BLQuadInstanceDataVBL->Push<float>(4);
+
+    m_TimeOfLastBufferSwap = 0.0f;
+    m_TimeSinceLastBufferSwap = glfwGetTime();
+    std::cout << m_TimeSinceLastBufferSwap * 1000.0f << "ms to initialize engine!\n";
 }
 
 Quixel::~Quixel()
@@ -34,11 +61,41 @@ Quixel::~Quixel()
     delete m_Window;
     delete m_Camera;
     delete m_TexShader;
-    delete m_BlockShader;
+    delete m_InstancedRGBAQuadShader;
+
+    delete m_BLQuadVBL;
+    delete m_BLQuadInstanceVA;
+    delete m_BLQuadIB;
+    delete m_QuadInstancesData;
+    delete m_BLQuadInstanceDataVBL;
+}
+
+void Quixel::UpdateQuadInstanceArray()
+{
+    delete m_BLQuadInstanceVA; // delete
+    VertexBuffer instanceDataVB = VertexBuffer(m_QuadInstancesData->data(), m_QuadInstancesData->size() * sizeof(float) * 4); // RGBA - ABCD,ABCD,ABCD,ABCD (MATRIX)
+
+    m_BLQuadInstanceVA = new VertexArray(*m_BLQuadVB, *m_BLQuadVBL, instanceDataVB, *m_BLQuadInstanceDataVBL); // recreate, also fix need to deref here...
+}
+
+void Quixel::BindInstancedRGBAQuadShader()
+{
+
 }
 
 void Quixel::Update()
 {
+    UpdateQuadInstanceArray(); // might not need doing every frame! add a check?
+
+    m_InstancedRGBAQuadShader->Bind();
+    m_InstancedRGBAQuadShader->SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
+    m_InstancedRGBAQuadShader->SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix());
+
+    m_BLQuadInstanceVA->Bind();
+    m_BLQuadIB->Bind();
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, m_QuadInstancesData->size() / 5);
+    m_QuadInstancesData->clear(); // clear data for matrixes and colors
+
     m_Window->SwapBuffers();
 
     m_TimeSinceLastBufferSwap = glfwGetTime() - m_TimeOfLastBufferSwap;
@@ -47,6 +104,7 @@ void Quixel::Update()
     glfwPollEvents(); // poll events eg. input n' shite
     Clear();
 }
+
 void Quixel::Clear() const
 {
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
@@ -58,12 +116,17 @@ void Quixel::SetClearColor(Color clearColor)
     glClearColor(clearColor.R(), clearColor.G(), clearColor.B(), clearColor.A());
 }
 
+void Quixel::SetClearColor(Color* clearColor)
+{
+    glClearColor(clearColor->R(), clearColor->G(), clearColor->B(), clearColor->A());
+}
+
 bool Quixel::ShouldClose()
 {
     return (m_Window->ShouldClose());
 }
 
-void Quixel::SetSync(uint32_t size)
+void Quixel::SetVSync(uint32_t size)
 {
     glfwSwapInterval(size);
 }
@@ -76,85 +139,14 @@ void Quixel::Terminate()
 
 void Quixel::FillRect(float x, float y, float width, float height, Color fillColor)
 {
-    m_BlockShader->Bind();
-    m_BlockShader->SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
-    m_BlockShader->SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix());
-    // m_BlockShader->SetUniformMat4f("u_model", glm::scale(glm::mat4(1.0f), glm::vec3(x2 - x1, y2 - y1, 1.0f)));
-    m_BlockShader->SetUniformMat4f("u_model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f)), glm::vec3(width, height, 1.0f)));
-    // create a model matrix from aabb points
+    glm::mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f)), glm::vec3(width, height, 1.0f));
 
-    m_BlockShader->SetUniform4f("u_color", fillColor.Data());
-
-    float vertices[] = {
-        1.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-
-    unsigned int indexes[] = {
-        0, 1, 2,
-        3, 0, 2
-    };
-
-    VertexBuffer vb = VertexBuffer(&vertices[0], sizeof(float) * 3 * 4);
-    VertexBufferLayout vbl = VertexBufferLayout();
-    vbl.Push<float>(3);
-
-    VertexArray va = VertexArray(vb, vbl);
-
-    IndexBuffer ib = IndexBuffer(&indexes[0], 6);
-
-    va.Bind();
-    ib.Bind();
-
-    GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+    m_QuadInstancesData->push_back(fillColor.Data()); // push vec4 color
+    m_QuadInstancesData->push_back(modelMatrix[0]);
+    m_QuadInstancesData->push_back(modelMatrix[1]);
+    m_QuadInstancesData->push_back(modelMatrix[2]);
+    m_QuadInstancesData->push_back(modelMatrix[3]); // push mat4 model matrix as vec4s
 }
-
-// void Engine::Draw(const VertexArray& va, const IndexBuffer& ib, Shader& shader)
-// {
-//     shader.Bind();
-//     shader.SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
-//     shader.SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix()); // maybe implement camera/no camera modes! also check to see if these uniforms exist, tell user to create them if they do not...
-// 
-//     va.Bind();
-//     ib.Bind();
-// 
-//     GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr)); // type could be unsigned short to optimise! make dynamic?
-// }
-// void Engine::Draw(const VertexArray& va, Shader& shader)
-// {
-//     shader.Bind();
-//     shader.SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
-//     shader.SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix()); // maybe implement camera/no camera modes! also check to see if these uniforms exist, tell user to create them if they do not...
-// 
-//     shader.SetUniform3f("u_viewPos", m_Camera->GetPosition());
-// 
-//     va.Bind();
-// 
-//     GLCall(glDrawArrays(GL_TRIANGLES, 0, va.GetVertexCount())); // type could be unsigned short to optimise! make dynamic?
-// }
-// void Engine::DrawInstancedArrays(const VertexArray& instanceVertexArray, Shader& instanceShader)
-// {
-//     instanceShader.Bind();
-//     instanceShader.SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
-//     instanceShader.SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix());
-// 
-//     instanceShader.SetUniform3f("u_viewPos", m_Camera->GetPosition());
-// 
-//     instanceVertexArray.Bind();
-// 
-//     glDrawArraysInstanced(GL_TRIANGLES, 0, instanceVertexArray.GetVertexCount(), instanceVertexArray.GetInstanceCount());
-// }
-// void Engine::DrawLines(const VertexArray& va, Shader& shader)
-// {
-//     shader.Bind();
-//     shader.SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
-//     shader.SetUniformMat4f("u_projection", m_Camera->GetProjectionMatrix()); // maybe implement camera/no camera modes! also check to see if these uniforms exist, tell user to create them if they do not...
-// 
-//     va.Bind();
-//     glDrawArrays(GL_LINES, 0, va.GetVertexCount());
-// }
 
 // glfwSetWindowCloseCallback(gameWindow.GetID(), glfwWindowCloseCallback);
 // glfwSetKeyCallback(gameWindow.GetID(), glfwKeyCallback);

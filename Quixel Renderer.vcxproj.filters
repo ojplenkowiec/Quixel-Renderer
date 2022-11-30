@@ -55,6 +55,9 @@
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shadermanager.cpp">
+      <Filter>Abstract Objects\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vertexbuffer.h">
@@ -99,12 +102,15 @@
     <ClInclude Include="color.h">
       <Filter>Abstract Objects</Filter>
     </ClInclude>
+    <ClInclude Include="shadermanager.h">
+      <Filter>Abstract Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="tex.shader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="bucket.shader">
+    <None Include="InstancedAABBs.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
