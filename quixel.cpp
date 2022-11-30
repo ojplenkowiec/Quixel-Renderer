@@ -1,6 +1,6 @@
-#include "quixel2d.h"
+#include "quixel.h"
 
-Quixel2D::Quixel2D(uint32_t width, uint32_t height, const char* name)
+Quixel::Quixel(uint32_t width, uint32_t height, const char* name)
 {
     if (glfwInit() != GLFW_TRUE) {
         throw std::runtime_error("Couldn't initialize GLFW!");
@@ -17,19 +17,19 @@ Quixel2D::Quixel2D(uint32_t width, uint32_t height, const char* name)
         throw std::runtime_error("Couldn't initialize GLEW!");
     }
 
-    m_Camera = new Camera2D(width, height);
+    m_Camera = new Camera(width, height);
 
-    m_TexShader = new Shader("quixel2dtex.shader");
-    m_BlockShader = new Shader("quixel2dblock.shader");
+    m_TexShader = new Shader("tex.shader");
+    m_BlockShader = new Shader("bucket.shader");
 
-    // DO CALLBACKS STUFF, CREATE GLOBALS CLASS IN ENGINE
+    glfwSetErrorCallback(glfwErrorCallback);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-Quixel2D::~Quixel2D()
+Quixel::~Quixel()
 {
     delete m_Window;
     delete m_Camera;
@@ -37,7 +37,7 @@ Quixel2D::~Quixel2D()
     delete m_BlockShader;
 }
 
-void Quixel2D::Update()
+void Quixel::Update()
 {
     m_Window->SwapBuffers();
 
@@ -47,39 +47,34 @@ void Quixel2D::Update()
     glfwPollEvents(); // poll events eg. input n' shite
     Clear();
 }
-void Quixel2D::Clear() const
+void Quixel::Clear() const
 {
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
     glClear(GL_DEPTH_BUFFER_BIT); // clears depth buffer for if enabled
 }
 
-void Quixel2D::SetClearColor(float r, float g, float b, float a)
+void Quixel::SetClearColor(Color clearColor)
 {
-    glClearColor(r, g, b, a);
+    glClearColor(clearColor.R(), clearColor.G(), clearColor.B(), clearColor.A());
 }
 
-void Quixel2D::SetClearColorHex(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
-{
-    glClearColor((float)r / (float)255, (float)g / (float)255, (float)b / (float)255, (float)a / (float)255);
-}
-
-bool Quixel2D::ShouldClose()
+bool Quixel::ShouldClose()
 {
     return (m_Window->ShouldClose());
 }
 
-void Quixel2D::SetSync(uint32_t size)
+void Quixel::SetSync(uint32_t size)
 {
     glfwSwapInterval(size);
 }
 
-void Quixel2D::Terminate()
+void Quixel::Terminate()
 {
     m_Window->Destroy();
     glfwTerminate();
 }
 
-void Quixel2D::FillRect(float x, float y, float width, float height, glm::vec4 color)
+void Quixel::FillRect(float x, float y, float width, float height, Color fillColor)
 {
     m_BlockShader->Bind();
     m_BlockShader->SetUniformMat4f("u_view", m_Camera->GetViewMatrix());
@@ -88,7 +83,7 @@ void Quixel2D::FillRect(float x, float y, float width, float height, glm::vec4 c
     m_BlockShader->SetUniformMat4f("u_model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f)), glm::vec3(width, height, 1.0f)));
     // create a model matrix from aabb points
 
-    m_BlockShader->SetUniform4f("u_color", color);
+    m_BlockShader->SetUniform4f("u_color", fillColor.Data());
 
     float vertices[] = {
         1.0f, 1.0f, 0.0f,
@@ -161,16 +156,7 @@ void Quixel2D::FillRect(float x, float y, float width, float height, glm::vec4 c
 //     glDrawArrays(GL_LINES, 0, va.GetVertexCount());
 // }
 
-// glfwSetErrorCallback(glfwErrorCallback);
-    // glfwSetWindowCloseCallback(gameWindow.GetID(), glfwWindowCloseCallback);
-    // glfwSetKeyCallback(gameWindow.GetID(), glfwKeyCallback);
-    // glfwSetMouseButtonCallback(gameWindow.GetID(), glfwMouseButtonCallback);
-    // glfwSetCursorPosCallback(gameWindow.GetID(), glfwMousePositionCallback);
-
-    /* Buffer Creation -------------------------------*/
-
-    /* VAO Creation ----------------------------------*/
-
-    /* Shader Creation --------------------------*/
-
-    /* Renderer instantiation --------------------------*/
+// glfwSetWindowCloseCallback(gameWindow.GetID(), glfwWindowCloseCallback);
+// glfwSetKeyCallback(gameWindow.GetID(), glfwKeyCallback);
+// glfwSetMouseButtonCallback(gameWindow.GetID(), glfwMouseButtonCallback);
+// glfwSetCursorPosCallback(gameWindow.GetID(), glfwMousePositionCallback);

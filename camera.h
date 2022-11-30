@@ -8,11 +8,13 @@
 
 class Camera { // camera should have a target window?
 private:
-	glm::vec3 m_PositionVector;
+	glm::vec2 m_PositionVector;
 
-	glm::vec3 m_UpVector;
-	glm::vec3 m_RightVector;
-	glm::vec3 m_ForwardsVector;
+	glm::vec2 m_UpVector;
+	glm::vec2 m_RightVector;
+
+	float m_Width;
+	float m_Height;
 
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_ViewMatrix;
@@ -20,50 +22,28 @@ private:
 	bool m_ViewMatrixNeedsUpdate;
 	bool m_ProjectionMatrixNeedsUpdate;
 
-	float c_Pitch; // up/down
-	float c_Yaw; // left/right
-
-	float m_FieldOfView;
-	float m_AspectRatio;
-	float m_NearClipDistance;
-	float m_FarClipDistance;
-
-	float m_MaxFov;
-	float m_MinFov;
+	// float c_Pitch; // up/down
+	// float c_Yaw; // left/right
+	float c_Roll;
 
 	void UpdateDirectionVectors();
 
 	void UpdateViewMatrix();
 	void UpdateProjectionMatrix();
 public:
-	Camera(float aspectRatio, float fov, float nearDistance, float farDistance);
+	Camera(float width, float height);
 
-	void UpdateFov(float dFov);
-	void SetFov(float fov);
+	void Move(glm::vec2 moveVector);
+	void Rotate(float angle);
 
-	void MoveForwards(float distance);
-	void MoveRight(float distance);
-	void MoveUp(float distance);
-	void Rotate(float dPitch, float dYaw);
-
-	void TranslateForwards(float distance);
-	void TranslateRight(float distance);
-	void TranslateUp(float distance);
-	void Translate(glm::vec3 translationVector);
-
-	inline void UpdateAspectRatio(float aspectRatio) { m_AspectRatio = aspectRatio; }
-
-	void FocusOn(glm::vec3 position); // ACTUALLY FINISH THIS! maybe too abstract...
-
-	glm::vec3 GetRay(float mouse_x, float mouse_y, float windowWidth, float windowHeight); // idk about this at all its so weird... maybe should be created in scenE by getting data?
+	void Translate(glm::vec2 translationVector);
 
 	glm::mat4 GetProjectionMatrix();
 	glm::mat4 GetViewMatrix();
 
-	inline glm::vec3 GetPosition() { return m_PositionVector; }
-	inline glm::vec3 GetUpVector() { return m_UpVector; }
-	inline glm::vec3 GetRightVector() { return m_RightVector; }
-	inline glm::vec3 GetForwardsVector() { return m_ForwardsVector; }
+	inline glm::vec2 GetPosition() { return m_PositionVector; }
+	inline glm::vec2 GetUpVector() { return m_UpVector; }
+	inline glm::vec2 GetRightVector() { return m_RightVector; }
 };
 
 #endif

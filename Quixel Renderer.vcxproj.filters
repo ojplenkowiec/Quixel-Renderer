@@ -1,120 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{7209dec4-ac52-47da-944c-036ea3fbe0f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Textures">
       <UniqueIdentifier>{0f1df21d-4442-4a06-ac6c-8ea6d037654b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Objects">
-      <UniqueIdentifier>{0a1c94e5-1dff-44f2-b187-6595d1592688}</UniqueIdentifier>
+    <Filter Include="Rendering Pipeline">
+      <UniqueIdentifier>{73e1a89e-1f09-43f2-8802-a50e72b80912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering Pipeline\Source Files">
+      <UniqueIdentifier>{03a0382f-8ecd-4479-8882-fd9fc20f0543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Abstract Objects">
+      <UniqueIdentifier>{23925c35-581b-418e-a152-b5b1af783aeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Abstract Objects\Source Files">
+      <UniqueIdentifier>{b57400b1-8cfa-4282-a288-ef1c39372937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{cff6311e-9e49-4eb2-af83-6f0260538b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Source Files">
+      <UniqueIdentifier>{d42ca6f6-20e4-4cf2-9a97-691a3227725a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{ed94cc09-d222-49bd-9fee-bedf2d1df819}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="indexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="quixel2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering Pipeline\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering Pipeline\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="indexbuffer.cpp">
+      <Filter>Rendering Pipeline\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vertexarray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering Pipeline\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vertexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering Pipeline\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Abstract Objects\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="window.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Abstract Objects\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="camera2d.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="quixel.cpp">
+      <Filter>Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="indexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="quixel2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="vertexbuffer.h">
+      <Filter>Rendering Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="vertexarray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vertexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="debugging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="callbacks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inputstate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Rendering Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="vertexbufferlayout.h">
-      <Filter>Header Files</Filter>
+      <Filter>Rendering Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Rendering Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Rendering Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="indexbuffer.h">
+      <Filter>Rendering Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="window.h">
-      <Filter>Header Files</Filter>
+      <Filter>Abstract Objects</Filter>
     </ClInclude>
-    <ClInclude Include="camera2d.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="camera.h">
+      <Filter>Abstract Objects</Filter>
     </ClInclude>
-    <ClInclude Include="sprite.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="inputstate.h">
+      <Filter>Abstract Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Abstract Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="quixel.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="callbacks.h">
+      <Filter>Abstract Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="debugging.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>Abstract Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="normal.shader">
+    <None Include="tex.shader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="instanced_normal.shader">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="basic.shader">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="ClassDiagram.cd" />
-    <None Include="Rendering Pipeline.drawio.pdf" />
-    <None Include="packages.config" />
-    <None Include="quixel2dtex.shader">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="quixel2dblock.shader">
+    <None Include="bucket.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
