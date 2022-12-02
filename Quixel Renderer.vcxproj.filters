@@ -105,6 +105,9 @@
     <ClInclude Include="shadermanager.h">
       <Filter>Abstract Objects</Filter>
     </ClInclude>
+    <ClInclude Include="primitives.h">
+      <Filter>Abstract Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="tex.shader">

@@ -185,6 +185,7 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="indexbuffer.h" />
     <ClInclude Include="inputstate.h" />
+    <ClInclude Include="primitives.h" />
     <ClInclude Include="quixel.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shadermanager.h" />

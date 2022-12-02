@@ -19,68 +19,68 @@ public:
 	inline glm::vec4 Data() { return glm::vec4(m_R, m_G, m_B, m_A); }
 };
 
-class HexRGBA : public Color {
+class iRGBA : public Color {
 public:
-	HexRGBA(unsigned char rHex, unsigned char gHex, unsigned char bHex, unsigned char aHex) {
-		m_R = rHex / 255.0f;
-	    m_G = gHex / 255.0f;
-		m_B = bHex / 255.0f;
-		m_A = aHex / 255.0f;
+	iRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+		m_R = r / 255.0f;
+	    m_G = g / 255.0f;
+		m_B = b / 255.0f;
+		m_A = a / 255.0f;
 	}
-	HexRGBA(unsigned char toneHex, unsigned char opacityHex) {
-		m_R, m_G, m_B = toneHex / 255.0f;
-		m_A = opacityHex / 255.0f;
+	iRGBA(unsigned char tone, unsigned char opacity) {
+		m_R, m_G, m_B = tone / 255.0f;
+		m_A = opacity / 255.0f;
 	}
 };
-class HexRGB : public Color {
+class iRGB : public Color {
 public:
-	HexRGB(unsigned char rHex, unsigned char gHex, unsigned char bHex) {
-		m_R = rHex / 255.0f;
-		m_G = gHex / 255.0f;
-		m_B = bHex / 255.0f;
+	iRGB(unsigned char r, unsigned char g, unsigned char b) {
+		m_R = r / 255.0f;
+		m_G = g / 255.0f;
+		m_B = b / 255.0f;
 	}
-	HexRGB(unsigned char toneHex) {
-		m_R, m_G, m_B = toneHex / 255.0f;
+	iRGB(unsigned char tone) {
+		m_R, m_G, m_B = tone / 255.0f;
 	}
 };
 
-class RGBA : public Color {
+class fRGBA : public Color {
 public:
-	RGBA(float rVal, float gVal, float bVal, float aVal) {
-		if (rVal <= 1.0f) {
-			if (rVal > 0.0f) {
-				m_R = rVal;
+	fRGBA(float r, float g, float b, float a) {
+		if (r <= 1.0f) {
+			if (r > 0.0f) {
+				m_R = r;
 			}
 			else {
 				m_R = 0.0f;
 			}
 		}
-		if (gVal <= 1.0f) {
-			if (gVal > 0.0f) {
-				m_G = gVal;
+		if (g <= 1.0f) {
+			if (g > 0.0f) {
+				m_G = g;
 			}
 			else {
 				m_G = 0.0f;
 			}
 		}
-		if (bVal <= 1.0f) {
-			if (bVal > 0.0f) {
-				m_B = bVal;
+		if (b <= 1.0f) {
+			if (b > 0.0f) {
+				m_B = b;
 			}
 			else {
 				m_B = 0.0f;
 			}
 		}
-		if (aVal <= 1.0f) {
-			if (aVal > 0.0f) {
-				m_A = aVal;
+		if (a <= 1.0f) {
+			if (a > 0.0f) {
+				m_A = a;
 			}
 			else {
 				m_A = 0.0f;
 			}
 		}
 	}
-	RGBA(float tone, float opacity) {
+	fRGBA(float tone, float opacity) {
 		if (tone <= 1.0f) {
 			if (tone > 0.0f) {
 				m_R = tone;
@@ -103,35 +103,35 @@ public:
 		}
 	}
 };
-class RGB : public Color {
+class fRGB : public Color {
 public:
-	RGB(float rVal, float gVal, float bVal) {
-		if (rVal <= 1.0f) {
-			if (rVal > 0.0f) {
-				m_R = rVal;
+	fRGB(float r, float g, float b) {
+		if (r <= 1.0f) {
+			if (r > 0.0f) {
+				m_R = r;
 			}
 			else {
 				m_R = 0.0f;
 			}
 		}
-		if (gVal <= 1.0f) {
-			if (gVal > 0.0f) {
-				m_G = gVal;
+		if (g <= 1.0f) {
+			if (g > 0.0f) {
+				m_G = g;
 			}
 			else {
 				m_G = 0.0f;
 			}
 		}
-		if (bVal <= 1.0f) {
-			if (bVal > 0.0f) {
-				m_B = bVal;
+		if (b <= 1.0f) {
+			if (b > 0.0f) {
+				m_B = b;
 			}
 			else {
 				m_B = 0.0f;
 			}
 		}
 	}
-	RGB(float tone) {
+	fRGB(float tone) {
 		if (tone <= 1.0f) {
 			if (tone > 0.0f) {
 				m_R = tone;
